@@ -24,7 +24,33 @@ git clone <repo> && cd cheny
 pip install -r requirements.txt
 ```
 
-需求：Python 3.11+。所有指令都從專案根目錄執行，且都要帶 `PYTHONPATH=src`。
+需求：Python 3.11+。所有指令都從專案根目錄執行，且都要讓 Python 找得到 `src/`。
+
+本文其餘範例都以 macOS／Linux 的 bash 寫法呈現（`PYTHONPATH=src python ...`）。
+**Windows 的寫法不同**，對照如下：
+
+| | 設環境變數 | 執行 |
+|---|---|---|
+| macOS / Linux | `export FINMIND_TOKEN=xxx` | `PYTHONPATH=src python -m twfactor ...` |
+| Windows PowerShell | `$env:FINMIND_TOKEN="xxx"` | `$env:PYTHONPATH="src"; python -m twfactor ...` |
+| Windows cmd | `set FINMIND_TOKEN=xxx` | `set PYTHONPATH=src` 後另起一行 `python -m twfactor ...` |
+
+PowerShell 不吃 `VAR=value cmd` 這種前綴寫法，`export` 也不存在；
+cmd 的 `set` 不能用 `&&` 串在同一行的前面。這是最常見的卡關點。
+
+**Windows 另外要設 UTF-8。** 程式的終端輸出用到 `⚠ ≥ ≤ −` 四個字元，
+它們不在繁體中文 Windows 預設的 cp950 編碼裡。直接在主控台看通常沒問題，
+但**一旦把輸出導向檔案或管線就會 `UnicodeEncodeError` 中斷**：
+
+```powershell
+$env:PYTHONUTF8=1        # PowerShell；或每次執行改用 python -X utf8 -m twfactor ...
+```
+
+```cmd
+set PYTHONUTF8=1
+```
+
+匯出的 CSV 帶 UTF-8 BOM，Excel 直接開不會亂碼，不受此設定影響。
 
 ### 步驟 1：先跑離線冒煙測試（不需網路、不需 token）
 
@@ -58,6 +84,18 @@ PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
 PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
     --stocks-file config/universe_candidates.txt \
     --director-openapi --cache-dir .fincache \
+    --quota-wait 600 --quota-retries 18
+```
+
+同一條指令的 Windows PowerShell 版（反引號是 PowerShell 的換行符）：
+
+```powershell
+$env:FINMIND_TOKEN="你的 token"
+$env:PYTHONPATH="src"
+$env:PYTHONUTF8=1
+python -m twfactor run --top 50 --source finmind `
+    --stocks-file config/universe_candidates.txt `
+    --director-openapi --cache-dir .fincache `
     --quota-wait 600 --quota-retries 18
 ```
 
