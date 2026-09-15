@@ -17,8 +17,8 @@ PoC（2026-09-15）從這份資料實測出兩件會直接算錯的事，兩者�
    實測 887 家上櫃公司中有 380 家（43%）有此情形，故以
    （姓名, 目前持股, 設質股數）去重。這不是邊緣案例，不能不處理。
 
-這份資料沒有發行股數，持股比例需由外部提供發行股數（本專案取自 FinMind
-TaiwanStockShareholding 的 NumberOfSharesIssued），湊不齊就回 None，不推估。
+這份資料沒有發行股數，持股比例需由外部提供發行股數（本專案取自 TWSE／TPEx
+公司基本資料的已發行普通股數），湊不齊就回 None，不推估。
 """
 
 from __future__ import annotations

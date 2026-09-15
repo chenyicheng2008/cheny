@@ -135,7 +135,7 @@ class TestLegalEntityDeduplication:
 
 
 class TestSharesOutstandingInjection:
-    """這份 open data 沒有發行股數，需由外部（FinMind）提供。"""
+    """這份 open data 沒有發行股數，需由外部（TWSE／TPEx 公司基本資料）提供。"""
 
     def test_injected_shares_outstanding_used(self, tmp_path):
         from twfactor.sources.director_holding import CsvDirectorHoldingProvider

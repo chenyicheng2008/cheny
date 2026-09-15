@@ -9,54 +9,21 @@
 
 import pytest
 
-from twfactor.params import load_field_map
-from twfactor.sources.finmind import FinMindSource
+from _xbrl_stub import EPS, WITH_Q2, const, duration, facts_for, merge
 
-YEARS = [2021, 2022, 2023, 2024, 2025]
-COMPANY = {"stock_id": "9999", "stock_name": "測試", "market": "twse",
-           "industry_finmind": "電子工業"}
+FLAT_EPS = const(4.0)                                   # 每年 EPS = 4.0
 
 
-def _eps_rows(per_year_quarters):
-    """per_year_quarters: {year: [Q1, Q2, Q3, Q4]} 單季 EPS。"""
-    days = ("03-31", "06-30", "09-30", "12-31")
-    return [{"date": f"{y}-{d}", "stock_id": "9999", "type": "EPS", "value": v}
-            for y, qs in per_year_quarters.items() for d, v in zip(days, qs)]
-
-
-def _dividend_rows(per_year):
-    return [{"date": f"{y}-07-01", "stock_id": "9999",
-             "CashExDividendTradingDate": f"{y}-06-15",
-             "CashEarningsDistribution": v, "CashStatutorySurplus": 0.0}
-            for y, v in per_year.items()]
-
-
-class StubSource(FinMindSource):
-    def __init__(self, eps_rows, dividend_rows):
-        super().__init__(load_field_map(None), years=5)
-        self._eps, self._div = eps_rows, dividend_rows
-
-    @property
-    def target_years(self):
-        return list(YEARS)
-
-    def _get(self, dataset, **params):
-        return {"TaiwanStockFinancialStatements": self._eps,
-                "TaiwanStockBalanceSheet": [],
-                "TaiwanStockCashFlowsStatement": [],
-                "TaiwanStockDividend": self._div}[dataset]
-
-
-def _facts(eps_per_year, dividends):
-    return StubSource(_eps_rows(eps_per_year), _dividend_rows(dividends)).fetch_facts([COMPANY])[0]
-
-
-FLAT_EPS = {y: [1.0, 1.0, 1.0, 1.0] for y in YEARS}          # 每年 TTM EPS = 4.0
+def _facts(eps_per_year, dividends, interim=None, **kw):
+    pool = duration(EPS, eps_per_year)
+    if interim:
+        pool = merge(pool, {EPS: interim})
+    return facts_for(pool, dividends=dividends, **kw)
 
 
 class TestConstruction:
     def test_latest_fy_dividend_over_ttm_eps(self):
-        f = _facts(FLAT_EPS, {y: 2.0 for y in YEARS})
+        f = _facts(FLAT_EPS, const(2.0))
         assert f.ttm_eps == pytest.approx(4.0)
         assert f.ttm_payout_ratio == pytest.approx(50.0)     # 2.0 / 4.0
 
@@ -64,39 +31,49 @@ class TestConstruction:
         f = _facts(FLAT_EPS, {2021: 9.0, 2022: 9.0, 2023: 9.0, 2024: 9.0, 2025: 1.0})
         assert f.ttm_payout_ratio == pytest.approx(25.0)     # 只看 2025 的 1.0
 
-    def test_cash_and_statutory_surplus_are_summed(self):
-        rows = _dividend_rows({y: 1.0 for y in YEARS})
-        for r in rows:
-            r["CashStatutorySurplus"] = 1.0                  # 盈餘配息 + 公積配息
-        f = StubSource(_eps_rows(FLAT_EPS), rows).fetch_facts([COMPANY])[0]
-        assert f.ttm_payout_ratio == pytest.approx(50.0)     # (1.0+1.0) / 4.0
-
     def test_growing_eps_understates_payout(self):
-        """已知偏誤：EPS 成長時分母跑在分子前面，支付率被系統性低估。
-
-        股利與前一年相同，但 TTM EPS 翻倍，支付率就從 50% 掉到 25%。
-        這是接受的設計，記在這裡以免被誤認為 bug。
-        """
-        flat = _facts(FLAT_EPS, {y: 2.0 for y in YEARS})
-        growing = _facts({**FLAT_EPS, 2025: [2.0, 2.0, 2.0, 2.0]}, {y: 2.0 for y in YEARS})
+        """已知偏誤：EPS 成長時分母跑在分子前面，支付率被系統性低估。"""
+        flat = _facts(FLAT_EPS, const(2.0))
+        growing = _facts({**FLAT_EPS, 2025: 8.0}, const(2.0))
         assert flat.ttm_payout_ratio == pytest.approx(50.0)
         assert growing.ttm_payout_ratio == pytest.approx(25.0)
+
+    def test_ttm_rolls_forward_with_interim_report(self):
+        """9 月中已有 Q2 報告：TTM = 今年上半年 3.0 ＋ 去年全年 4.0 − 去年上半年 2.0 = 5.0。"""
+        interim = {"From20260101To20260630": 3.0, "From20250101To20250630": 2.0}
+        f = _facts(FLAT_EPS, const(2.0), interim=interim, as_of=WITH_Q2)
+        assert f.ttm_eps == pytest.approx(5.0)
+        assert f.ttm_payout_ratio == pytest.approx(40.0)
 
 
 class TestEdges:
     def test_negative_ttm_eps_gives_zero_ratio_not_na(self):
         """TTM EPS<0 時比率設 0，由 score_payout_ratio 依「TTM EPS<0」規則給 0 分。"""
-        f = _facts({**FLAT_EPS, 2025: [-1.0, -1.0, -1.0, -1.0]}, {y: 2.0 for y in YEARS})
+        f = _facts({**FLAT_EPS, 2025: -4.0}, const(2.0))
         assert f.ttm_eps == pytest.approx(-4.0)
         assert f.ttm_payout_ratio == 0.0
 
     def test_zero_ttm_eps_is_na_not_zero_percent(self):
-        f = _facts({**FLAT_EPS, 2025: [1.0, -1.0, 1.0, -1.0]}, {y: 2.0 for y in YEARS})
-        assert f.ttm_eps == pytest.approx(0.0)
+        f = _facts({**FLAT_EPS, 2025: 0.0}, const(2.0))
         assert f.ttm_payout_ratio is None
         assert "payout_ratio" in f.missing_reasons
 
-    def test_no_dividend_record_is_na(self):
+    def test_no_dividend_record_means_zero_payout(self):
+        """除權息結果表是全市場完整名單：查無紀錄即未配息 → 支付率 0%，不是 N/A。"""
         f = _facts(FLAT_EPS, {})
+        assert f.dividend_annual == [0.0] * 5
+        assert f.ttm_payout_ratio == 0.0
+
+    def test_unresolved_mixed_dividend_is_na(self):
+        """權息同除但查不到現金股利明細 → 不以合計值頂替，股利與支付率皆 N/A。"""
+        f = _facts(FLAT_EPS, const(2.0), unresolved=[2024])
+        assert f.dividend_annual is None
+        assert "2024" in f.missing_reasons["dividend"]
         assert f.ttm_payout_ratio is None
-        assert "payout_ratio" in f.missing_reasons
+
+    def test_interim_missing_for_company_is_na(self):
+        """期中報告未涵蓋本公司時 TTM 無法還原，不退回用年度值頂替。"""
+        f = _facts(FLAT_EPS, const(2.0), as_of=WITH_Q2)
+        assert f.ttm_eps is None
+        assert "ttm_eps" in f.missing_reasons
+        assert f.ttm_payout_ratio is None

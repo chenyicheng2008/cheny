@@ -24,8 +24,7 @@ class DataSource(Protocol):
 class DirectorHoldingProvider(Protocol):
     """非獨立董監持股與質押（PRD §8.10）。
 
-    FinMind 公開 dataset 不提供此資料，且無法區分獨立董事，
-    因此獨立成一個可插拔介面，由 MOPS／Goodinfo 等來源實作。
+    財報來源不含此資料，因此獨立成一個可插拔介面，由 MOPS 董監持股 open data 等來源實作。
     未提供時該因子標 N/A（PRD §10：不補分、不按比例放大）。
     """
 

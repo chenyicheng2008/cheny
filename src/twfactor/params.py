@@ -8,7 +8,7 @@ from typing import Any
 import yaml
 
 DEFAULT_PARAMS_PATH = Path(__file__).resolve().parents[2] / "config" / "scoring_params.yaml"
-DEFAULT_FIELDS_PATH = Path(__file__).resolve().parents[2] / "config" / "finmind_fields.yaml"
+DEFAULT_FIELDS_PATH = Path(__file__).resolve().parents[2] / "config" / "xbrl_fields.yaml"
 
 REQUIRED_FACTORS = [
     "eps", "free_cash_flow", "dividend", "payout_ratio", "net_margin",

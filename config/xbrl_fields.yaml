@@ -1,0 +1,67 @@
+# MOPS XBRL 科目對照（取代 finmind_fields.yaml）
+#
+# 來源：公開資訊觀測站 t203sb02「XBRL 資訊平台－案例文件整批下載」，每季一個 zip。
+# 2026-09-15 以 tifrs-2025Q4.zip 實測，2330 FY2024 比較數與公告數逐項吻合：
+#   營收 2,894,307,699 千元、EPS 45.25、營業活動現金流 1,826,177,068 千元、
+#   取得不動產廠房設備 -956,006,536 千元、利息費用 10,495,320 千元、
+#   應付公司債 926,604,506 千元、租賃負債－非流動 28,755,342 千元。
+#
+# tags：依序比對的 XBRL 元素名稱。aggregate: sum 時把「有出現的」全部相加，
+#       否則取第一個出現的。解析不到一律標 N/A，不以推測值補齊（PRD §19.6）。
+# 期間：損益與現金流量為年初至今累計，年度值取 From{Y}0101To{Y}1231；
+#       資產負債表取 AsOf{Y}1231。TTM ＝ 今年累計 ＋ 去年全年 − 去年同期累計。
+
+fields:
+  revenue:
+    tags: [ifrs-full:Revenue]              # 金控無此元素（其營收為 tifrs-bsci-fh:NetIncomeLoss），金融業不評淨利率
+  operating_income:
+    tags: [ifrs-full:ProfitLossFromOperatingActivities]
+  net_income:
+    tags: [ifrs-full:ProfitLoss]           # 本期淨利（含非控制權益），與舊版 FinMind IncomeAfterTaxes 同義
+  eps:
+    tags: [ifrs-full:BasicEarningsLossPerShare]
+  pretax_income:
+    tags: [ifrs-full:ProfitLossBeforeTax]
+  income_tax:
+    tags: [ifrs-full:IncomeTaxExpenseContinuingOperations]
+  interest_expense:
+    # 一般業在現金流量表調整項，金控在損益表；兩者擇一
+    tags: [ifrs-full:AdjustmentsForInterestExpense, ifrs-full:InterestExpense]
+  total_equity:
+    tags: [ifrs-full:Equity]               # 權益總額（含非控制權益）
+  short_term_debt:
+    tags: [ifrs-full:ShorttermBorrowings]
+    aggregate: sum
+  long_term_borrowings:
+    # ROIC 有息負債用（需求方 2026-09-15 定義：短期借款＋長期借款＋應付公司債）
+    # 注意 2330 另有 NoncurrentPortionOfNoncurrentLoansReceived 與 LongtermBorrowings 同值，不可重複加
+    tags: [ifrs-full:LongtermBorrowings, ifrs-full:NoncurrentPortionOfNoncurrentBondsIssued]
+    aggregate: sum
+  long_term_debt:
+    # PRD §8.6：到期日一年以上之借款，含長期融資租賃。
+    # FinMind 沒有租賃負債科目而長期低估；XBRL 有「租賃負債－非流動」，依 PRD 原義納入。
+    tags: [ifrs-full:LongtermBorrowings, ifrs-full:NoncurrentPortionOfNoncurrentBondsIssued,
+           ifrs-full:NoncurrentFinanceLeaseLiabilities]
+    aggregate: sum
+  operating_cash_flow:
+    tags: [ifrs-full:CashFlowsFromUsedInOperatingActivities]
+  capex:
+    # 取得不動產、廠房及設備（負值）。XBRL 另有取得無形資產
+    # （ifrs-full:PurchaseOfIntangibleAssetsClassifiedAsInvestingActivities），
+    # 維持與既有 FCF 定義一致暫不納入；需求方要納入時加進這個清單即可。
+    tags: [ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities]
+    aggregate: sum
+
+# 有期末資產負債表、卻沒有任何借款元素 → 借款認定為 0（需求方 2026-09-15 確認的規則沿用）。
+# 「有期末資產負債表」以 total_equity 在該期末有值判定。
+zero_fill_fields: [short_term_debt, long_term_borrowings, long_term_debt]
+
+# 期中報告申報期限（月, 日）。資料基準日晚於期限才使用該季做 TTM，避免前視偏誤。
+interim_deadlines:
+  1: [5, 15]
+  2: [8, 14]
+  3: [11, 14]
+
+# 金融業判定（PRD §8.12）：TWSE t187ap03_L「產業別」／TPEx mopsfin_t187ap03_O
+# 「SecuritiesIndustryCode」。實測 2891、2881、2801、6005、6015 等皆為 17（金融保險業）。
+financial_industry_codes: ["17"]
