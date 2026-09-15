@@ -7,3 +7,5 @@ output/
 *.xlsx
 !fixtures/*.xlsx
 .DS_Store
+.fincache/
+.xbrlcache/

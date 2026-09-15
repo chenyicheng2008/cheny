@@ -1,0 +1,158 @@
+# FinMind 欄位對照（PRD §19 Data Source PoC 的產出物）
+#
+# 狀態：已於 2026-09-15 以 `python -m twfactor probe-schema
+#       --stocks 2330,2891,8299,1256,4195` 實測回填（原始清單見 output/poc_schema.json）。
+#       confirmed 為實測存在之 type；解析不到者一律標 N/A，不以推測值補齊（PRD §19.6）。
+#       confirmed 可為單一字串，或搭配 aggregate: sum 時為字串陣列。
+#       candidates 僅為後備猜測清單，未經實測不得視為已確認。
+
+datasets:
+  info: TaiwanStockInfo
+  price: TaiwanStockPrice
+  income_statement: TaiwanStockFinancialStatements
+  balance_sheet: TaiwanStockBalanceSheet
+  cash_flow: TaiwanStockCashFlowsStatement
+  dividend: TaiwanStockDividend
+  shareholding: TaiwanStockShareholding
+
+# PoC 實測結論：三張報表的期間語意「不一致」，彙總成年度值的方式必須分開處理。
+# 以 2330 FY2024 驗證（括號為對外公告數）：
+#   income_statement  quarterly      單季值。EPS 8.70+9.56+12.55+14.45 = 45.26（45.25）
+#                                    Revenue 四季合計 2,894.3 億元 ×10（2,894.3）
+#   cash_flow         cumulative_ytd 年初至今累計值，逐季遞增，Q4 即全年。
+#                                    營業活動現金流 Q1 436.3B → Q4 1,826.2B（全年 1,826.2B）
+#                                    取得不動產廠房設備 Q4 -956.0B（全年資本支出 956.0B）
+#                                    ※ 舊版程式誤將此表四季相加，會高估約 2.5 倍
+#   balance_sheet     instant        期末存量，年度值取 12-31 當期值
+period_semantics:
+  income_statement: quarterly
+  balance_sheet: instant
+  cash_flow: cumulative_ytd
+
+fields:
+  revenue:
+    dataset: income_statement
+    confirmed: Revenue            # 一般產業「營業收入」；金融業同一 type 為「淨收益」
+    candidates: [Revenue, OperatingRevenue, TotalOperatingRevenue, NetSales]
+  operating_income:
+    dataset: income_statement
+    confirmed: OperatingIncome    # 「營業利益（損失）」。金融業（2891）無此 type → N/A
+    candidates: [OperatingIncome, OperatingProfit, NetOperatingIncome]
+  net_income:
+    dataset: income_statement
+    # 「本期淨利（淨損）」。一般產業為 IncomeAfterTaxes，金融業（2891）拼法為 IncomeAfterTax，
+    # 故以 candidates 承接；IncomeFromContinuingOperations 實測同值，作最後後備。
+    # ⚠ 實測發現舊版 candidates 首位的 TotalConsolidatedProfitForThePeriod 是
+    #    「本期綜合損益總額」（2330 FY2024Q4 為 412.4B，非淨利 374.5B），語意錯誤，已移除。
+    confirmed: IncomeAfterTaxes
+    candidates: [IncomeAfterTax, IncomeFromContinuingOperations]
+  eps:
+    dataset: income_statement
+    confirmed: EPS                # 「基本每股盈餘」，單季值
+    candidates: [EPS]
+  interest_expense:
+    # ⚠ 實測：income_statement 無利息費用科目；利息費用出現在現金流量表的
+    #    「收益費損項目」調整項（type=InterestExpense，正值），五檔全有。
+    #    另有 PayTheInterest（支付之利息，現金基礎、負值）不採用。
+    dataset: cash_flow
+    confirmed: InterestExpense
+    candidates: [InterestExpense]
+  pretax_income:
+    # ROIC 用：有效稅率 = 所得稅費用 ÷ 稅前淨利，兩者同年度（PRD §8.9，需求方 2026-09-15 定義）
+    dataset: income_statement
+    confirmed: PreTaxIncome        # 一般產業「稅前淨利（淨損）」，五檔全有
+    candidates: [PreTaxIncome]
+  income_tax:
+    dataset: income_statement
+    confirmed: TAX                 # 「所得稅費用（利益）」，五檔全有
+    candidates: [TAX]
+  short_term_debt:
+    # ROIC 分母的有息負債之一。FinMind 未提供「一年內到期長期負債」與租賃負債，
+    # 故有息負債 = 短期借款 + 長期借款 + 應付公司債，可能低估。
+    dataset: balance_sheet
+    confirmed: [ShorttermBorrowings]
+    aggregate: sum
+    candidates: [ShorttermBorrowings]
+  total_equity:
+    dataset: balance_sheet
+    confirmed: Equity             # 「權益總額」（含非控制權益），五檔全有
+    candidates: [Equity, EquityAttributableToOwnersOfParent]
+  long_term_debt:
+    # PRD §8.6：到期日一年以上之借款，含長期融資租賃。
+    # ⚠ 實測落差：FinMind 資產負債表未提供「租賃負債－非流動」科目，
+    #    故本欄僅涵蓋 長期借款 + 應付公司債，不含長期融資租賃（低估）。
+    #    註：舊版拼成 LongTermBorrowings（大寫 T），實際為 LongtermBorrowings。
+    #    金融業（2891）兩者皆無 → N/A。
+    dataset: balance_sheet
+    confirmed: [LongtermBorrowings, BondsPayable]
+    aggregate: sum
+    candidates: [LongtermBorrowings, BondsPayable]
+  operating_cash_flow:
+    dataset: cash_flow
+    confirmed: CashFlowsFromOperatingActivities   # 「營業活動之淨現金流入（流出）」，累計值
+    candidates: [CashFlowsFromOperatingActivities, NetCashInflowFromOperatingActivities]
+  capex:
+    # 「取得不動產、廠房及設備」（負值），累計值。金融業（2891）無此 type → FCF 標 N/A。
+    # FinMind 未提供「取得無形資產」等其他資本支出科目，故資本支出可能低估。
+    dataset: cash_flow
+    confirmed: [PropertyAndPlantAndEquipment]
+    aggregate: sum
+    candidates: [PropertyAndPlantAndEquipment]
+  cash_dividend:
+    # 現金股利 = 盈餘配息 + 公積配息，依除息交易日所屬年度歸戶。
+    dataset: dividend
+    confirmed: [CashEarningsDistribution, CashStatutorySurplus]
+    candidates: [CashEarningsDistribution, CashStatutorySurplus]
+    aggregate: sum
+  shares_issued:
+    dataset: shareholding
+    confirmed: NumberOfSharesIssued
+    candidates: [NumberOfSharesIssued]
+
+# PRD §8.10 非獨立董監持股與質押
+# FinMind 公開 dataset 未提供董監持股/質押明細，亦無法區分獨立董事（PoC 已確認）。
+# 第一版該因子由外部來源注入（見 sources/base.py DirectorHoldingProvider），
+# 未注入時標示 N/A（不補分、不按比例放大，依 PRD §10）。
+director_holding:
+  available_in_finmind: false
+  fallback_source: null          # 例如 MOPS 董監持股餘額明細資料 / Goodinfo
+  note: "PoC 必測：來源是否能排除獨立董事、是否提供質押比例（PRD §19.4 公司治理）"
+
+# PRD §8.9 ROIC（PRD 未定義，需求方 2026-09-15 指定）
+#   ROIC = 稅後營業利益 ÷（股東權益 ＋ 有息負債），分子分母皆取期末值
+#   稅後營業利益 = 年度營業利益 × (1 − 有效稅率)
+#   有效稅率     = 年度所得稅費用 ÷ 年度稅前淨利（僅在稅前淨利 > 0 時成立）
+#   有息負債     = 期末 短期借款 + 長期借款 + 應付公司債
+roic:
+  formula: nopat_over_equity_plus_interest_bearing_debt
+  effective_tax_rate: income_tax / pretax_income
+  note: "稅前淨利 <= 0 之年度無法導出有效稅率，該年標 N/A（不以推估稅率補齊，PRD §19.6）；
+         有息負債不含一年內到期長期負債與租賃負債（FinMind 無此科目），故分母可能低估"
+
+# PRD §9 五年含股息再投資總報酬
+total_return:
+  method: reinvest_cash_dividend  # 由 price + dividend 自行計算，計算式見 sources/finmind.py
+  note: "FinMind TaiwanStockPrice 為未還原價；需以除息日再投資方式重建，PoC 需與 TradingView Total Return 交叉驗證"
+
+# ⚠ PoC 實測：「不帶 data_id 的全市場查詢」一律回 HTTP 400。
+#   匿名為 "Your level is free."，帶註冊 token 為 "Your level is register."，
+#   兩者都被擋 —— 註冊 token 只提高請求配額，不解鎖全市場查詢，需贊助（Sponsor）層級。
+#   實測仍開放全市場查詢者僅 TaiwanStockInfo / TaiwanStockInfoWithWarrant /
+#   TaiwanStockTotalMarginPurchaseShortSale；TaiwanStockPrice、TaiwanStockShareholding、
+#   TaiwanStockMarketValue、TaiwanStockPER 等皆被擋。
+#   因此「全市場市值排名」需贊助（Sponsor）層級 token，否則須由外部指定候選母體，
+#   再以逐檔 price × shares_issued 實測市值排名（見 FinMindSource.market_caps）。
+universe:
+  whole_market_requires_paid_tier: true
+  open_whole_market_datasets: [TaiwanStockInfo, TaiwanStockInfoWithWarrant, TaiwanStockTotalMarginPurchaseShortSale]
+
+# 金融業判定（PRD §8.12）。TaiwanStockInfo.industry_category 之中文分類。
+# ⚠ PRD §4 要求 StockBoss / Goodinfo 雙分類並存且互不覆蓋，但未指定
+#   金融業部分評分要以哪一欄觸發。此處暫以 FinMind 分類為主判定欄位，待需求方確認。
+financial_industry_categories:
+  - 金融保險
+  - 金融保險業
+  - 金融業
+  - 銀行
+  - 保險
+  - 證券

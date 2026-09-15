@@ -1,16 +1,18 @@
 """CLI（PRD §2 操作流程、FR-08 手動更新、FR-10 匯出）。
 
 用法：
-  python -m twfactor run --top 50 --token $FINMIND_TOKEN     # 正式：FinMind 取數
-  python -m twfactor run --top 50 --source fixture           # 離線：合成資料驗證管線
-  python -m twfactor probe-schema --stocks 2330,2891,8299    # PoC：探測 FinMind 實際欄位
+  python -m twfactor run --top 50 --director-openapi --download-xbrl   # 正式：全市場市值前 50
+  python -m twfactor run --top 50 --stocks-file config/universe.txt     # 限定候選母體
+  python -m twfactor run --top 50 --source fixture                      # 離線：合成資料驗證管線
+
+資料來源皆免金鑰：TWSE／TPEx OpenAPI（母體、市值、產業別）、MOPS XBRL 整批檔（財報）、
+證交所／櫃買中心除權息結果表（現金股利）。XBRL 整批檔單檔約 100 MB 以上，預設不自動下載；
+第一次執行加 --download-xbrl，之後沿用 --cache-dir 內已下載的檔案。
 """
 
 from __future__ import annotations
 
 import argparse
-import json
-import os
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -25,24 +27,85 @@ def _build_source(args, field_map, years):
     if args.source == "fixture":
         from .sources.fixtures import FixtureSource
         return FixtureSource(years=years)
-    from .sources.finmind import FinMindSource
-    token = args.token or os.environ.get("FINMIND_TOKEN", "")
+    from .sources.opendata import OpenDataSource
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
-    return FinMindSource(field_map, token=token, years=years, as_of=as_of)
+    return OpenDataSource(field_map, years=years, as_of=as_of, cache_dir=args.cache_dir,
+                          allow_download=args.download_xbrl)
+
+
+def _candidates(args) -> list[str] | None:
+    """候選母體：--stocks 逗號清單，或 --stocks-file（# 之後為註解，其餘以空白分隔）。"""
+    ids: list[str] = []
+    if getattr(args, "stocks", None):
+        ids += [s.strip() for s in args.stocks.split(",")]
+    if getattr(args, "stocks_file", None):
+        for line in Path(args.stocks_file).read_text(encoding="utf-8").splitlines():
+            ids += line.split("#")[0].split()
+    seen: dict[str, None] = {}
+    for i in ids:
+        if i:
+            seen.setdefault(i, None)
+    return list(seen) or None
+
+
+def _attach_director_provider(args, source, companies) -> None:
+    """建立董監持股 provider 並掛上資料來源（PRD §8.10）。
+
+    持股比例需要發行股數，而發行股數在取得母體時才會連同市值一起取回，
+    因此 provider 必須在 companies 之後才建得起來。
+    """
+    shares = {c["stock_id"]: c["shares_issued"] for c in companies if c.get("shares_issued")}
+    provider = None
+    if getattr(args, "director_holdings", None):
+        from .sources.director_holding import CsvDirectorHoldingProvider
+        provider = CsvDirectorHoldingProvider(args.director_holdings, shares_outstanding=shares)
+    elif getattr(args, "director_openapi", False):
+        from .sources.director_holding import OpenApiDirectorHoldingProvider
+        # 董監持股每月更新，快取以日期分目錄，避免沿用過期資料
+        cache = Path(args.cache_dir) / "opendata" / f"director_{date.today().isoformat()}"
+        provider = OpenApiDirectorHoldingProvider(shares_outstanding=shares, cache_dir=cache)
+        for label, why in provider.failed_sources.items():
+            print(f"      ⚠ 董監持股來源「{label}」取得失敗，該市場將標 N/A：{why}", file=sys.stderr)
+    if provider is None:
+        return
+    print(f"      董監持股來源：{provider.name}", file=sys.stderr)
+    if not provider.has_title_column:
+        print("      ⚠ 來源無職稱欄，無法挑出非獨立董監，該因子將標 N/A（PRD §8.10）",
+              file=sys.stderr)
+    elif not provider.has_pledge_column:
+        print("      ⚠ 來源無質押欄，質押比例將標 N/A（PRD §8.10）", file=sys.stderr)
+    source.director_provider = provider
 
 
 def cmd_run(args) -> int:
+    from .sources.xbrl import XbrlError
+
     params = load_params(args.params)
     field_map = load_field_map(args.fields)
     years = params["periods"]["annual_years"]
 
     source = _build_source(args, field_map, years)
-    print(f"[1/4] 取得母體：{source.name}，市值前 {args.top} 檔 …", file=sys.stderr)
-    companies = source.top_by_market_cap(args.top)
+    candidates = _candidates(args)
+    scope = f"候選母體 {len(candidates)} 檔" if candidates else "全市場"
+    print(f"[1/4] 取得母體：{source.name}，{scope} 取市值前 {args.top} 檔 …", file=sys.stderr)
+    if args.source == "fixture":
+        companies = source.top_by_market_cap(args.top)
+    else:
+        companies = source.top_by_market_cap(args.top, candidates=candidates)
     print(f"      取得 {len(companies)} 檔", file=sys.stderr)
+    if companies and companies[0].get("price_date"):
+        print(f"      市值基準：{companies[0]['price_date']} 收盤價 × 已發行普通股數", file=sys.stderr)
+    if candidates:
+        print("      ⚠ 排名僅在指定候選母體內成立，非全市場市值排名（PRD §3）", file=sys.stderr)
+
+    _attach_director_provider(args, source, companies)
 
     print("[2/4] 取得並標準化財務資料 …", file=sys.stderr)
-    facts_list = source.fetch_facts(companies)
+    try:
+        facts_list = source.fetch_facts(companies)
+    except XbrlError as exc:
+        print(f"\n✖ {exc}", file=sys.stderr)
+        return 2
     facts_map = {f.stock_id: f for f in facts_list}
 
     print("[3/4] 評分與排名 …", file=sys.stderr)
@@ -133,46 +196,28 @@ def _print_summary(cards, params) -> None:
             print(f"  {_pad(FACTOR_LABELS[k], 18)}{n} 檔")
 
 
-def cmd_probe(args) -> int:
-    """PRD §19.6：產出 FinMind 實際欄位清單，供回填 finmind_fields.yaml。"""
-    from .sources.finmind import FinMindSource
-    field_map = load_field_map(args.fields)
-    params = load_params(args.params)
-    src = FinMindSource(field_map, token=args.token or os.environ.get("FINMIND_TOKEN", ""),
-                        years=params["periods"]["annual_years"])
-    result = src.probe_schema([s.strip() for s in args.stocks.split(",") if s.strip()])
-    out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    for ds, per_stock in result.items():
-        print(f"\n== {ds} ==")
-        for sid, types in per_stock.items():
-            print(f"  {sid}: {len(types)} 個 type")
-            for t in types[:40]:
-                print(f"    - {t}")
-    print(f"\n已寫入 {out}")
-    return 0
-
-
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="twfactor", description="臺股財務因子自動評分系統（PRD v1.1 第一階段）")
     ap.add_argument("--params", default=None, help="評分參數檔（預設 config/scoring_params.yaml）")
-    ap.add_argument("--fields", default=None, help="FinMind 欄位對照檔")
+    ap.add_argument("--fields", default=None, help="XBRL 科目對照檔（預設 config/xbrl_fields.yaml）")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     r = sub.add_parser("run", help="取得資料、評分、排名並匯出")
     r.add_argument("--top", type=int, default=50, help="取市值前 N 檔（預設 50）")
-    r.add_argument("--source", choices=["finmind", "fixture"], default="finmind")
-    r.add_argument("--token", default=None, help="FinMind API token（或用 FINMIND_TOKEN 環境變數）")
-    r.add_argument("--as-of", default=None, help="資料基準日 YYYY-MM-DD，用於推定最新完整年度")
+    r.add_argument("--source", choices=["opendata", "fixture"], default="opendata")
+    r.add_argument("--as-of", default=None, help="資料基準日 YYYY-MM-DD，用於推定最新完整年度與 TTM 季別")
+    r.add_argument("--stocks", default=None, help="限定候選母體代碼，逗號分隔（預設全市場）")
+    r.add_argument("--stocks-file", default=None, help="限定候選母體檔案，每行一個代碼")
+    r.add_argument("--cache-dir", default=".xbrlcache",
+                   help="XBRL 整批檔與公開資料快取目錄（預設 .xbrlcache）")
+    r.add_argument("--download-xbrl", action="store_true",
+                   help="缺少的 XBRL 整批檔自動從公開資訊觀測站下載（單檔約 100 MB 以上）")
+    r.add_argument("--director-holdings", default=None,
+                   help="MOPS 董監持股餘額明細匯出檔（CSV），供 PRD §8.10 評分")
+    r.add_argument("--director-openapi", action="store_true",
+                   help="直接取 TWSE／TPEx 公開 open data 的董監持股（免金鑰）")
     r.add_argument("--outdir", default="output")
     r.set_defaults(func=cmd_run)
-
-    p = sub.add_parser("probe-schema", help="探測 FinMind 實際欄位（PoC）")
-    p.add_argument("--stocks", default="2330,2891,8299")
-    p.add_argument("--token", default=None)
-    p.add_argument("--out", default="output/poc_schema.json")
-    p.set_defaults(func=cmd_probe)
 
     args = ap.parse_args(argv)
     return args.func(args)

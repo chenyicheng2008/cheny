@@ -1,4 +1,4 @@
 from .base import DataSource, DirectorHoldingProvider
-from .finmind import FinMindSource
+from .opendata import OpenDataSource
 
-__all__ = ["DataSource", "DirectorHoldingProvider", "FinMindSource"]
+__all__ = ["DataSource", "DirectorHoldingProvider", "OpenDataSource"]

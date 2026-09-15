@@ -5,7 +5,7 @@
    "stock_id": "SYN001",
    "stock_name": "合成優質電子",
    "market": "twse",
-   "industry_finmind": "半導體業",
+   "industry_code": "半導體業",
    "is_financial": false,
    "market_cap": 9500000000000.0,
    "fiscal_years": [
@@ -72,7 +72,7 @@
    "stock_id": "SYN002",
    "stock_name": "合成穩健食品",
    "market": "twse",
-   "industry_finmind": "食品工業",
+   "industry_code": "食品工業",
    "is_financial": false,
    "market_cap": 410000000000.0,
    "fiscal_years": [
@@ -139,7 +139,7 @@
    "stock_id": "SYN003",
    "stock_name": "合成循環航運",
    "market": "twse",
-   "industry_finmind": "航運業",
+   "industry_code": "航運業",
    "is_financial": false,
    "market_cap": 280000000000.0,
    "fiscal_years": [
@@ -206,7 +206,7 @@
    "stock_id": "SYN004",
    "stock_name": "合成轉機面板",
    "market": "twse",
-   "industry_finmind": "光電業",
+   "industry_code": "光電業",
    "is_financial": false,
    "market_cap": 92000000000.0,
    "fiscal_years": [
@@ -273,7 +273,7 @@
    "stock_id": "SYN005",
    "stock_name": "合成高槓桿營建",
    "market": "tpex",
-   "industry_finmind": "建材營造",
+   "industry_code": "建材營造",
    "is_financial": false,
    "market_cap": 11000000000.0,
    "fiscal_years": [
@@ -340,7 +340,7 @@
    "stock_id": "SYN006",
    "stock_name": "合成無債軟體",
    "market": "tpex",
-   "industry_finmind": "資訊服務業",
+   "industry_code": "資訊服務業",
    "is_financial": false,
    "market_cap": 44000000000.0,
    "fiscal_years": [
@@ -407,7 +407,7 @@
    "stock_id": "SYN007",
    "stock_name": "合成金控",
    "market": "twse",
-   "industry_finmind": "金融保險",
+   "industry_code": "金融保險",
    "is_financial": true,
    "market_cap": 770000000000.0,
    "fiscal_years": [
@@ -456,7 +456,7 @@
    "stock_id": "SYN008",
    "stock_name": "合成證券",
    "market": "twse",
-   "industry_finmind": "金融保險",
+   "industry_code": "金融保險",
    "is_financial": true,
    "market_cap": 60000000000.0,
    "fiscal_years": [
@@ -505,7 +505,7 @@
    "stock_id": "SYN009",
    "stock_name": "合成創新板生技",
    "market": "innovation",
-   "industry_finmind": "生技醫療業",
+   "industry_code": "生技醫療業",
    "is_financial": false,
    "market_cap": 8000000000.0,
    "fiscal_years": [
@@ -558,7 +558,7 @@
    "stock_id": "SYN010",
    "stock_name": "合成缺漏測試",
    "market": "twse",
-   "industry_finmind": "電子零組件業",
+   "industry_code": "電子零組件業",
    "is_financial": false,
    "market_cap": 55000000000.0,
    "fiscal_years": [
@@ -628,7 +628,7 @@
    "stock_id": "SYN011",
    "stock_name": "合成樣本11",
    "market": "twse",
-   "industry_finmind": "化學工業",
+   "industry_code": "化學工業",
    "is_financial": false,
    "market_cap": 456786779999.0,
    "fiscal_years": [
@@ -695,7 +695,7 @@
    "stock_id": "SYN012",
    "stock_name": "合成樣本12",
    "market": "tpex",
-   "industry_finmind": "鋼鐵工業",
+   "industry_code": "鋼鐵工業",
    "is_financial": false,
    "market_cap": 194931527228.0,
    "fiscal_years": [
@@ -762,7 +762,7 @@
    "stock_id": "SYN013",
    "stock_name": "合成樣本13",
    "market": "tpex",
-   "industry_finmind": "汽車工業",
+   "industry_code": "汽車工業",
    "is_financial": false,
    "market_cap": 281226686702.0,
    "fiscal_years": [
@@ -829,7 +829,7 @@
    "stock_id": "SYN014",
    "stock_name": "合成樣本14",
    "market": "twse",
-   "industry_finmind": "化學工業",
+   "industry_code": "化學工業",
    "is_financial": false,
    "market_cap": 80266307598.0,
    "fiscal_years": [
@@ -896,7 +896,7 @@
    "stock_id": "SYN015",
    "stock_name": "合成樣本15",
    "market": "twse",
-   "industry_finmind": "塑膠工業",
+   "industry_code": "塑膠工業",
    "is_financial": false,
    "market_cap": 185819862743.0,
    "fiscal_years": [
@@ -963,7 +963,7 @@
    "stock_id": "SYN016",
    "stock_name": "合成樣本16",
    "market": "twse",
-   "industry_finmind": "塑膠工業",
+   "industry_code": "塑膠工業",
    "is_financial": false,
    "market_cap": 389568243726.0,
    "fiscal_years": [
@@ -1030,7 +1030,7 @@
    "stock_id": "SYN017",
    "stock_name": "合成樣本17",
    "market": "tpex",
-   "industry_finmind": "汽車工業",
+   "industry_code": "汽車工業",
    "is_financial": false,
    "market_cap": 172990852757.0,
    "fiscal_years": [
@@ -1097,7 +1097,7 @@
    "stock_id": "SYN018",
    "stock_name": "合成樣本18",
    "market": "twse",
-   "industry_finmind": "電子零組件業",
+   "industry_code": "電子零組件業",
    "is_financial": false,
    "market_cap": 243601425753.0,
    "fiscal_years": [
@@ -1164,7 +1164,7 @@
    "stock_id": "SYN019",
    "stock_name": "合成樣本19",
    "market": "tpex",
-   "industry_finmind": "化學工業",
+   "industry_code": "化學工業",
    "is_financial": false,
    "market_cap": 548391561288.0,
    "fiscal_years": [
@@ -1231,7 +1231,7 @@
    "stock_id": "SYN020",
    "stock_name": "合成樣本20",
    "market": "twse",
-   "industry_finmind": "汽車工業",
+   "industry_code": "汽車工業",
    "is_financial": false,
    "market_cap": 289362918775.0,
    "fiscal_years": [
@@ -1298,7 +1298,7 @@
    "stock_id": "SYN021",
    "stock_name": "合成樣本21",
    "market": "twse",
-   "industry_finmind": "半導體業",
+   "industry_code": "半導體業",
    "is_financial": false,
    "market_cap": 44284873529.0,
    "fiscal_years": [
@@ -1365,7 +1365,7 @@
    "stock_id": "SYN022",
    "stock_name": "合成樣本22",
    "market": "twse",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 509543968198.0,
    "fiscal_years": [
@@ -1432,7 +1432,7 @@
    "stock_id": "SYN023",
    "stock_name": "合成樣本23",
    "market": "tpex",
-   "industry_finmind": "電子零組件業",
+   "industry_code": "電子零組件業",
    "is_financial": false,
    "market_cap": 451497633279.0,
    "fiscal_years": [
@@ -1499,7 +1499,7 @@
    "stock_id": "SYN024",
    "stock_name": "合成樣本24",
    "market": "twse",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 100456425640.0,
    "fiscal_years": [
@@ -1566,7 +1566,7 @@
    "stock_id": "SYN025",
    "stock_name": "合成樣本25",
    "market": "twse",
-   "industry_finmind": "化學工業",
+   "industry_code": "化學工業",
    "is_financial": false,
    "market_cap": 457592163213.0,
    "fiscal_years": [
@@ -1633,7 +1633,7 @@
    "stock_id": "SYN026",
    "stock_name": "合成樣本26",
    "market": "tpex",
-   "industry_finmind": "塑膠工業",
+   "industry_code": "塑膠工業",
    "is_financial": false,
    "market_cap": 542871724103.0,
    "fiscal_years": [
@@ -1700,7 +1700,7 @@
    "stock_id": "SYN027",
    "stock_name": "合成樣本27",
    "market": "tpex",
-   "industry_finmind": "鋼鐵工業",
+   "industry_code": "鋼鐵工業",
    "is_financial": false,
    "market_cap": 249097275387.0,
    "fiscal_years": [
@@ -1767,7 +1767,7 @@
    "stock_id": "SYN028",
    "stock_name": "合成樣本28",
    "market": "twse",
-   "industry_finmind": "塑膠工業",
+   "industry_code": "塑膠工業",
    "is_financial": false,
    "market_cap": 243873995772.0,
    "fiscal_years": [
@@ -1834,7 +1834,7 @@
    "stock_id": "SYN029",
    "stock_name": "合成樣本29",
    "market": "tpex",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 590925662789.0,
    "fiscal_years": [
@@ -1901,7 +1901,7 @@
    "stock_id": "SYN030",
    "stock_name": "合成樣本30",
    "market": "tpex",
-   "industry_finmind": "化學工業",
+   "industry_code": "化學工業",
    "is_financial": false,
    "market_cap": 446992226926.0,
    "fiscal_years": [
@@ -1968,7 +1968,7 @@
    "stock_id": "SYN031",
    "stock_name": "合成樣本31",
    "market": "tpex",
-   "industry_finmind": "鋼鐵工業",
+   "industry_code": "鋼鐵工業",
    "is_financial": false,
    "market_cap": 308921288288.0,
    "fiscal_years": [
@@ -2035,7 +2035,7 @@
    "stock_id": "SYN032",
    "stock_name": "合成樣本32",
    "market": "twse",
-   "industry_finmind": "紡織纖維",
+   "industry_code": "紡織纖維",
    "is_financial": false,
    "market_cap": 245248176857.0,
    "fiscal_years": [
@@ -2102,7 +2102,7 @@
    "stock_id": "SYN033",
    "stock_name": "合成樣本33",
    "market": "twse",
-   "industry_finmind": "汽車工業",
+   "industry_code": "汽車工業",
    "is_financial": false,
    "market_cap": 597381302858.0,
    "fiscal_years": [
@@ -2169,7 +2169,7 @@
    "stock_id": "SYN034",
    "stock_name": "合成樣本34",
    "market": "twse",
-   "industry_finmind": "半導體業",
+   "industry_code": "半導體業",
    "is_financial": false,
    "market_cap": 384321998935.0,
    "fiscal_years": [
@@ -2236,7 +2236,7 @@
    "stock_id": "SYN035",
    "stock_name": "合成樣本35",
    "market": "twse",
-   "industry_finmind": "紡織纖維",
+   "industry_code": "紡織纖維",
    "is_financial": false,
    "market_cap": 348193714658.0,
    "fiscal_years": [
@@ -2303,7 +2303,7 @@
    "stock_id": "SYN036",
    "stock_name": "合成樣本36",
    "market": "twse",
-   "industry_finmind": "電子零組件業",
+   "industry_code": "電子零組件業",
    "is_financial": false,
    "market_cap": 289410837635.0,
    "fiscal_years": [
@@ -2370,7 +2370,7 @@
    "stock_id": "SYN037",
    "stock_name": "合成樣本37",
    "market": "twse",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 206645693404.0,
    "fiscal_years": [
@@ -2437,7 +2437,7 @@
    "stock_id": "SYN038",
    "stock_name": "合成樣本38",
    "market": "tpex",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 567557659466.0,
    "fiscal_years": [
@@ -2504,7 +2504,7 @@
    "stock_id": "SYN039",
    "stock_name": "合成樣本39",
    "market": "tpex",
-   "industry_finmind": "電子零組件業",
+   "industry_code": "電子零組件業",
    "is_financial": false,
    "market_cap": 597236777393.0,
    "fiscal_years": [
@@ -2571,7 +2571,7 @@
    "stock_id": "SYN040",
    "stock_name": "合成樣本40",
    "market": "twse",
-   "industry_finmind": "半導體業",
+   "industry_code": "半導體業",
    "is_financial": false,
    "market_cap": 70101855663.0,
    "fiscal_years": [
@@ -2638,7 +2638,7 @@
    "stock_id": "SYN041",
    "stock_name": "合成樣本41",
    "market": "twse",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 66335680244.0,
    "fiscal_years": [
@@ -2705,7 +2705,7 @@
    "stock_id": "SYN042",
    "stock_name": "合成樣本42",
    "market": "twse",
-   "industry_finmind": "電子零組件業",
+   "industry_code": "電子零組件業",
    "is_financial": false,
    "market_cap": 486088445683.0,
    "fiscal_years": [
@@ -2772,7 +2772,7 @@
    "stock_id": "SYN043",
    "stock_name": "合成樣本43",
    "market": "twse",
-   "industry_finmind": "紡織纖維",
+   "industry_code": "紡織纖維",
    "is_financial": false,
    "market_cap": 361255611977.0,
    "fiscal_years": [
@@ -2839,7 +2839,7 @@
    "stock_id": "SYN044",
    "stock_name": "合成樣本44",
    "market": "twse",
-   "industry_finmind": "半導體業",
+   "industry_code": "半導體業",
    "is_financial": false,
    "market_cap": 534700591645.0,
    "fiscal_years": [
@@ -2906,7 +2906,7 @@
    "stock_id": "SYN045",
    "stock_name": "合成樣本45",
    "market": "twse",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 394632382222.0,
    "fiscal_years": [
@@ -2973,7 +2973,7 @@
    "stock_id": "SYN046",
    "stock_name": "合成樣本46",
    "market": "twse",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 469080209497.0,
    "fiscal_years": [
@@ -3040,7 +3040,7 @@
    "stock_id": "SYN047",
    "stock_name": "合成樣本47",
    "market": "tpex",
-   "industry_finmind": "汽車工業",
+   "industry_code": "汽車工業",
    "is_financial": false,
    "market_cap": 337837029832.0,
    "fiscal_years": [
@@ -3107,7 +3107,7 @@
    "stock_id": "SYN048",
    "stock_name": "合成樣本48",
    "market": "twse",
-   "industry_finmind": "電子零組件業",
+   "industry_code": "電子零組件業",
    "is_financial": false,
    "market_cap": 107908394661.0,
    "fiscal_years": [
@@ -3174,7 +3174,7 @@
    "stock_id": "SYN049",
    "stock_name": "合成樣本49",
    "market": "twse",
-   "industry_finmind": "通信網路業",
+   "industry_code": "通信網路業",
    "is_financial": false,
    "market_cap": 156954563510.0,
    "fiscal_years": [
@@ -3241,7 +3241,7 @@
    "stock_id": "SYN050",
    "stock_name": "合成樣本50",
    "market": "twse",
-   "industry_finmind": "鋼鐵工業",
+   "industry_code": "鋼鐵工業",
    "is_financial": false,
    "market_cap": 484148263254.0,
    "fiscal_years": [

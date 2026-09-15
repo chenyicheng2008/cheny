@@ -17,7 +17,7 @@ NA = None  # 以 None 表示 N/A；與 0 分嚴格區分
 class Provenance:
     """單一欄位的可追溯性資訊（PRD §6.1）。"""
 
-    source: str = ""          # 例如 "FinMind:TaiwanStockFinancialStatements"
+    source: str = ""          # 例如 "MOPS XBRL 2023Q4、2025Q4"
     field_name: str = ""      # 來源端原始欄位／API type
     period: str = ""          # 財報年度或 TTM 截止日
     fetched_at: str = ""      # 抓取時間 ISO8601
@@ -35,7 +35,7 @@ class CompanyFacts:
     stock_id: str
     stock_name: str = ""
     market: str = ""                  # twse / tpex / innovation
-    industry_finmind: str | None = None
+    industry_code: str | None = None          # TWSE／TPEx 產業別代碼（17 = 金融保險業）
     industry_stockboss: str | None = None
     industry_goodinfo: str | None = None
     is_financial: bool = False

@@ -24,7 +24,7 @@ def cards_to_dataframe(cards: list[ScoreCard], facts: dict[str, CompanyFacts] | 
             "市場別": c.market,
             "StockBoss 產業別": getattr(f, "industry_stockboss", None) if f else None,
             "Goodinfo 產業別": getattr(f, "industry_goodinfo", None) if f else None,
-            "FinMind 產業別": getattr(f, "industry_finmind", None) if f else None,
+            "交易所產業別代碼": getattr(f, "industry_code", None) if f else None,
             "市值": getattr(f, "market_cap", None) if f else None,
         }
         for key in FACTOR_ORDER:
