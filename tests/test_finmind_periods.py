@@ -102,6 +102,29 @@ class TestSemanticsProbe:
     def test_unknown_when_no_full_year(self):
         assert FinMindSource._guess_semantics({"x": {"2024-03-31": 1.0}}) == "unknown"
 
+    def test_sign_crossing_series_is_skipped_not_counted_as_quarterly(self):
+        """8299 FY2024 營業活動現金流由負轉正，但它其實是累計值。
+
+        年內變號的科目不具判別力，若把它算成單季那一側，會把整檔誤判成 quarterly。
+        這裡搭配一個確實累計的資本支出科目，結果應為 cumulative_ytd。
+        """
+        pools = {
+            "ocf": {"2024-03-31": -79.0, "2024-06-30": -46.6,
+                    "2024-09-30": -36.9, "2024-12-31": 20.9},
+            "capex": {"2024-03-31": -0.9, "2024-06-30": -2.0,
+                      "2024-09-30": -4.0, "2024-12-31": -9.6},
+        }
+        assert FinMindSource._guess_semantics(pools) == "cumulative_ytd"
+
+    def test_negative_series_growing_in_magnitude_is_cumulative(self):
+        pools = {"capex": {"2024-03-31": -181.3, "2024-06-30": -387.0,
+                           "2024-09-30": -594.1, "2024-12-31": -956.0}}
+        assert FinMindSource._guess_semantics(pools) == "cumulative_ytd"
+
+    def test_series_containing_zero_is_skipped(self):
+        assert FinMindSource._guess_semantics({"x": {"2024-03-31": 0.0, "2024-06-30": 1.0,
+                                                    "2024-09-30": 2.0, "2024-12-31": 3.0}}) == "unknown"
+
 
 class TestLatestYearOnly:
     """PRD §8.6 只看最新完整年度的存量值，不應要求五年齊全。

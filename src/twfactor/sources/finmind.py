@@ -156,7 +156,13 @@ class FinMindSource:
 
     @staticmethod
     def _guess_semantics(pools: dict[str, dict[str, float]]) -> str:
-        """以「同年度四季是否嚴格遞增」判斷累計 vs 單季。"""
+        """以「同年度四季的絕對值是否逐季遞增」推斷累計 vs 單季。
+
+        ⚠ 這是輔助判讀，不是權威來源 —— 權威值是 finmind_fields.yaml 的
+        period_semantics，由人工比對公告數確認。年度內金額由負轉正的科目
+        （例如營業活動現金流由虧轉盈）不具判別力，一律略過而不計入單季那一側；
+        早期版本把它們算成單季，才會把 8299／1256 這種公司誤判成 quarterly。
+        """
         cumulative = quarterly = 0
         for series in pools.values():
             by_year: dict[int, list[tuple[str, float]]] = defaultdict(list)
@@ -166,9 +172,12 @@ class FinMindSource:
                 if len(rows) < 4:
                     continue
                 vals = [v for _, v in sorted(rows)]
-                if all(v > 0 for v in vals) and all(b > a for a, b in zip(vals, vals[1:])):
-                    cumulative += 1
-                elif all(v < 0 for v in vals) and all(b < a for a, b in zip(vals, vals[1:])):
+                if any(v == 0 for v in vals):
+                    continue                       # 零值無法比較倍率
+                if not (all(v > 0 for v in vals) or all(v < 0 for v in vals)):
+                    continue                       # 年內變號，不具判別力
+                mags = [abs(v) for v in vals]
+                if all(b > a for a, b in zip(mags, mags[1:])):
                     cumulative += 1
                 else:
                     quarterly += 1
@@ -385,6 +394,20 @@ class FinMindSource:
         def annual(field: str, s: dict[str, float]) -> list[float] | None:
             return self._annual(s, years, mode(field)) if s else None
 
+        def instant_series(field: str, s: dict[str, float], zero_fill: bool) -> list[float] | None:
+            """逐年期末值。zero_fill=True 時，該年有期末資產負債表但無此科目即視為 0
+            （FinMind 不列示零餘額科目，需求方 2026-09-15 確認）。"""
+            out = []
+            for y in years:
+                got = self._annual(s, [y], mode(field)) if s else None
+                if got:
+                    out.append(got[0])
+                elif zero_fill and self._has_year_end(balance, y):
+                    out.append(0.0)
+                else:
+                    return None
+            return out
+
         def latest(field: str, s: dict[str, float]) -> float | None:
             """只取最新完整年度的值。存量科目的因子（§8.6）不需要五年序列，
             要求五年齊全會把「某一年該科目餘額為零而未列示」誤判成缺漏。"""
@@ -456,10 +479,9 @@ class FinMindSource:
                 f"{years[-1]} 年底無資產負債表資料，無法判斷長期負債"
             )
 
-        # ROIC 需 NOPAT 與投入資本；PRD 未定義公式，PoC 確認科目前一律 N/A
-        facts.missing_reasons.setdefault("roic", "PRD 未定義 ROIC 計算式；待需求方確認後實作")
-
         op_s, op_used = series("operating_income")
+        self._fill_roic(facts, years, series, annual, instant_series, prov)
+
         ie_s, ie_used = series("interest_expense")
         op_ttm = self._ttm(op_s, mode("operating_income"))
         ie_ttm = self._ttm(ie_s, mode("interest_expense"))
@@ -474,6 +496,66 @@ class FinMindSource:
 
         eps_ttm = self._ttm(eps_s, mode("eps"))
         facts.ttm_eps = eps_ttm
+
+    def _fill_roic(self, facts: CompanyFacts, years: list[int], series, annual,
+                   instant_series, prov) -> None:
+        """PRD §8.9 ROIC（需求方 2026-09-15 指定計算式）。
+
+            ROIC = 稅後營業利益 ÷（股東權益 ＋ 有息負債），皆取期末值
+            稅後營業利益 = 年度營業利益 × (1 − 有效稅率)
+            有效稅率     = 年度所得稅費用 ÷ 年度稅前淨利
+
+        有效稅率只在稅前淨利 > 0 時成立；虧損年度沒有可導出的有效稅率，
+        該公司整項標 N/A，不以推估稅率補齊（PRD §19.6）。
+        有息負債 = 期末 短期借款 + 長期借款 + 應付公司債；FinMind 未提供
+        一年內到期長期負債與租賃負債，故分母可能低估（會記在 provenance note）。
+        """
+        op_s, op_used = series("operating_income")
+        pretax_s, pretax_used = series("pretax_income")
+        tax_s, _ = series("income_tax")
+        eq_s, _ = series("total_equity")
+        std_s, _ = series("short_term_debt")
+        ltd_s, _ = series("long_term_debt")
+
+        op_a = annual("operating_income", op_s)
+        pretax_a = annual("pretax_income", pretax_s)
+        tax_a = annual("income_tax", tax_s)
+        eq_a = instant_series("total_equity", eq_s, zero_fill=False)
+        std_a = instant_series("short_term_debt", std_s, zero_fill=True)
+        ltd_a = instant_series("long_term_debt", ltd_s, zero_fill=True)
+
+        if not all([op_a, pretax_a, tax_a, eq_a, std_a, ltd_a]):
+            facts.missing_reasons["roic"] = (
+                "缺少 ROIC 所需科目（營業利益／稅前淨利／所得稅費用／股東權益／"
+                "短期借款／長期借款）之完整五年序列"
+            )
+            return
+
+        if any(v <= 0 for v in pretax_a):
+            facts.missing_reasons["roic"] = (
+                "五年內有稅前淨利 ≤0 之年度，無法導出有效稅率（不以推估稅率補齊）"
+            )
+            return
+
+        invested = [e + s + l for e, s, l in zip(eq_a, std_a, ltd_a)]
+        if any(c <= 0 for c in invested):
+            facts.missing_reasons["roic"] = "投入資本（股東權益＋有息負債）≤0，ROIC 無意義"
+            return
+
+        facts.roic_annual = [
+            op * (1 - t / pt) / cap * 100
+            for op, pt, t, cap in zip(op_a, pretax_a, tax_a, invested)
+        ]
+        prov("operating_income", op_used, True)
+        facts.provenance["roic"] = Provenance(
+            source=f"FinMind:{self.fm['datasets']['income_statement']}"
+                   f"+{self.fm['datasets']['balance_sheet']}",
+            field_name="稅後營業利益 ÷（股東權益＋有息負債），期末值",
+            period=f"{years[0]}–{years[-1]}", fetched_at=self._fetched_at,
+            note="有效稅率＝所得稅費用÷稅前淨利（同年度）；"
+                 "有息負債＝短期借款＋長期借款＋應付公司債，"
+                 "不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估",
+        )
 
     @classmethod
     def _ttm(cls, series: dict[str, float], mode: str) -> float | None:

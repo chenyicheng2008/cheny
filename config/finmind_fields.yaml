@@ -57,6 +57,22 @@ fields:
     dataset: cash_flow
     confirmed: InterestExpense
     candidates: [InterestExpense]
+  pretax_income:
+    # ROIC 用：有效稅率 = 所得稅費用 ÷ 稅前淨利，兩者同年度（PRD §8.9，需求方 2026-09-15 定義）
+    dataset: income_statement
+    confirmed: PreTaxIncome        # 一般產業「稅前淨利（淨損）」，五檔全有
+    candidates: [PreTaxIncome]
+  income_tax:
+    dataset: income_statement
+    confirmed: TAX                 # 「所得稅費用（利益）」，五檔全有
+    candidates: [TAX]
+  short_term_debt:
+    # ROIC 分母的有息負債之一。FinMind 未提供「一年內到期長期負債」與租賃負債，
+    # 故有息負債 = 短期借款 + 長期借款 + 應付公司債，可能低估。
+    dataset: balance_sheet
+    confirmed: [ShorttermBorrowings]
+    aggregate: sum
+    candidates: [ShorttermBorrowings]
   total_equity:
     dataset: balance_sheet
     confirmed: Equity             # 「權益總額」（含非控制權益），五檔全有
@@ -101,6 +117,17 @@ director_holding:
   available_in_finmind: false
   fallback_source: null          # 例如 MOPS 董監持股餘額明細資料 / Goodinfo
   note: "PoC 必測：來源是否能排除獨立董事、是否提供質押比例（PRD §19.4 公司治理）"
+
+# PRD §8.9 ROIC（PRD 未定義，需求方 2026-09-15 指定）
+#   ROIC = 稅後營業利益 ÷（股東權益 ＋ 有息負債），分子分母皆取期末值
+#   稅後營業利益 = 年度營業利益 × (1 − 有效稅率)
+#   有效稅率     = 年度所得稅費用 ÷ 年度稅前淨利（僅在稅前淨利 > 0 時成立）
+#   有息負債     = 期末 短期借款 + 長期借款 + 應付公司債
+roic:
+  formula: nopat_over_equity_plus_interest_bearing_debt
+  effective_tax_rate: income_tax / pretax_income
+  note: "稅前淨利 <= 0 之年度無法導出有效稅率，該年標 N/A（不以推估稅率補齊，PRD §19.6）；
+         有息負債不含一年內到期長期負債與租賃負債（FinMind 無此科目），故分母可能低估"
 
 # PRD §9 五年含股息再投資總報酬
 total_return:

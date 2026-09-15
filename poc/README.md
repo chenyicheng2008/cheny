@@ -4,7 +4,7 @@ PRD v1.1 §19 的 PoC 產出物。三個檔案都由真實 FinMind 資料產生�
 
 | 檔案 | 內容 |
 |---|---|
-| `poc_schema_20260915.json` | `probe-schema --stocks 2330,2891,8299,1256,4195` 的原始輸出：三張報表各自實際出現的 `type` 清單，以及實測推斷的期間語意 |
+| `poc_schema_20260915.json` | `probe-schema --stocks 2330,2891,8299,1256,4195` 的原始輸出：三張報表各自實際出現的 `type` 清單，以及期間語意的輔助推斷（權威值在 `config/finmind_fields.yaml`） |
 | `scores_top50_20260915.csv` | 候選母體內市值前 50 檔的評分結果（PRD §13.1 結果表） |
 | `snapshot_top50_20260915.json` | 同一次執行的完整快照，含每個欄位的 provenance 與每個 N/A 的缺漏原因（PRD §16） |
 
@@ -27,7 +27,9 @@ PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
 2. **非獨立董監持股（PRD §8.10）50 檔全部 N/A。** FinMind 不提供此資料。
    已實作 MOPS t16sn02 匯出檔的 provider（`--director-holdings`），但本次執行未餵入檔案
    （PoC 環境連不到 MOPS）。因此一般產業實際可評滿分為 15 而非 16，金融業為 8 而非 9。
-3. **ROIC（PRD §8.9）一般產業 38 檔全部 N/A。** PRD 未定義計算式。
+3. **ROIC（PRD §8.9）已依需求方 2026-09-15 指定的計算式實作**
+   （稅後營業利益 ÷（股東權益＋有息負債），期末值）。一般產業 38 檔中 32 檔可評，
+   6 檔因五年內有稅前淨利 ≤0 的年度、無法導出有效稅率而標 N/A。
 4. **利息保障倍數為重建值**，非 PRD 規定的 StockBoss 原值，
    計算式為 `TTM 營業利益 ÷ |TTM 利息費用|`。金融業無營業利益科目故 N/A。
 
