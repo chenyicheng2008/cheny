@@ -11,7 +11,8 @@
 | 參數化（PRD §12 門檻／權重全部外部化） | ✅ 完成 |
 | 可追溯性（原始值 → 命中規則 → 得分） | ✅ 完成 |
 | 匯出（CSV / Excel 三分頁 / JSON 快照） | ✅ 完成 |
-| FinMind 資料層 | ⚠ 已實作，**欄位對照待 PoC 實測確認**（見下） |
+| FinMind 資料層 | ✅ 欄位對照已 PoC 實測回填（2026-09-15） |
+| 市值前 N 母體（PRD §3） | ❌ FinMind 免費層級不得做全市場查詢，需贊助層級 token 或外部指定候選母體 |
 | 非獨立董監持股／質押（PRD §8.10） | ❌ FinMind 不提供，需另接來源，目前標 N/A |
 | 五年含息總報酬（PRD §9） | ⚠ 介面已留，計算式待 PoC 與 TradingView 交叉驗證 |
 
@@ -23,11 +24,16 @@ pip install -r requirements.txt
 # 離線驗證管線（合成資料，不需網路）
 PYTHONPATH=src python -m twfactor run --top 50 --source fixture
 
-# 正式：以 FinMind 取市值前 50 檔評分
-export FINMIND_TOKEN=<your token>
+# 正式：以 FinMind 取全市場市值前 50 檔評分（需贊助層級 token，見下節）
+export FINMIND_TOKEN=<your sponsor token>
 PYTHONPATH=src python -m twfactor run --top 50 --source finmind
 
-# PoC：探測 FinMind 財報 dataset 的實際欄位名稱
+# 免費／匿名層級：在指定候選母體內排名，並快取回應以便配額中斷後續跑
+PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
+    --stocks-file config/universe_candidates.txt \
+    --cache-dir .fincache --quota-wait 600 --quota-retries 18
+
+# PoC：探測 FinMind 財報 dataset 的實際欄位名稱與期間語意
 PYTHONPATH=src python -m twfactor probe-schema --stocks 2330,2891,8299,1256,4195
 ```
 
@@ -37,8 +43,9 @@ PYTHONPATH=src python -m twfactor probe-schema --stocks 2330,2891,8299,1256,4195
 ## 專案結構
 
 ```
-config/scoring_params.yaml   # PRD §12 所有門檻、滿分、權重（程式不得寫死）
-config/finmind_fields.yaml   # FinMind 欄位對照，PoC 產出物
+config/scoring_params.yaml     # PRD §12 所有門檻、滿分、權重（程式不得寫死）
+config/finmind_fields.yaml     # FinMind 欄位對照與期間語意，PoC 產出物
+config/universe_candidates.txt # 免費層級用的候選母體（非全市場掃描，見下）
 src/twfactor/
   models.py                  # CompanyFacts / FactorScore / ScoreCard
   params.py                  # 設定載入與一致性驗證（16 分、9 分自檢）
@@ -60,18 +67,69 @@ PRD §12 要求所有分數、門檻與期間以設定檔管理，以支撐第�
 
 權重第一版全為 1.0，`raw_total` 與 `weighted_total` 分開保存（PRD §12 明訂不可覆蓋原始結果）。
 
-## FinMind 作為 StockBoss 替代來源：已知落差
+## PoC 實測結果（2026-09-15）
 
-執行 `probe-schema` 回填 `config/finmind_fields.yaml` 的 `confirmed` 欄位前，
-財報欄位一律以 `candidates` 逐一嘗試，解析不到就標 N/A —— **不以推測值補齊**（PRD §19.6）。
+以 `probe-schema --stocks 2330,2891,8299,1256,4195` 實測，原始清單在
+`output/poc_schema.json`，已回填 `config/finmind_fields.yaml` 的 `confirmed`。
+解析不到的欄位一律標 N/A —— **不以推測值補齊**（PRD §19.6）。
 
-已確認的落差：
+### 一、三張報表的期間語意不同（會直接影響數值正確性）
 
-1. **董監持股／質押（PRD §8.10，1 分）**：FinMind 公開 dataset 未提供，且無法區分獨立董事。
+| dataset | 期間語意 | 年度值取法 |
+|---|---|---|
+| TaiwanStockFinancialStatements | 單季值 | 四季相加 |
+| TaiwanStockCashFlowsStatement | 年初至今累計 | 取該年度 12-31 當期值 |
+| TaiwanStockBalanceSheet | 期末存量 | 取該年度 12-31 當期值 |
+
+以 2330 FY2024 驗證：EPS 8.70+9.56+12.55+14.45 = 45.26（公告 45.25）；
+營業活動現金流 Q1 436.3B → Q4 1,826.2B，Q4 即全年（公告 1,826.2B）。
+**舊版程式把現金流量表當成單季值四季相加，會把營運現金流與資本支出高估約 2.5 倍**，
+本次已依 `period_semantics` 分開處理，並在 `tests/test_finmind_periods.py` 以上述實際數列固定行為。
+
+### 二、確認的欄位名稱
+
+`Revenue`／`OperatingIncome`／`EPS`／`Equity`／`CashFlowsFromOperatingActivities`／
+`PropertyAndPlantAndEquipment`／`CashEarningsDistribution`／`NumberOfSharesIssued`
+皆如預期存在。與原 `candidates` 猜測不同之處：
+
+- **淨利**：一般產業為 `IncomeAfterTaxes`，金融業（2891）拼法為 `IncomeAfterTax`。
+  原 candidates 首位的 `TotalConsolidatedProfitForThePeriod` 實為「本期綜合損益總額」
+  （2330 FY2024Q4 為 412.4B，而非淨利 374.5B），語意錯誤，已移除。
+- **利息費用**：損益表沒有這個科目，實際出現在**現金流量表**的收益費損調整項
+  （`InterestExpense`，正值）。欄位對照的 dataset 已改為 `cash_flow`。
+- **長期借款**：實際拼法是 `LongtermBorrowings`（小寫 t），原設定拼成 `LongTermBorrowings`
+  永遠解析不到。現以 `LongtermBorrowings + BondsPayable` 合計。
+- FinMind 資產負債表**沒有**「租賃負債－非流動」科目，故長期負債不含長期融資租賃（低估）。
+- 現金流量表**沒有**取得無形資產等科目，資本支出僅含不動產廠房設備（低估）。
+- 金融業（2891）無 `OperatingIncome`、無 `PropertyAndPlantAndEquipment`、
+  無長期借款科目 → 對應因子標 N/A，符合 PRD §8.12 部分評分。
+
+### 三、免費層級不得做全市場查詢（影響 PRD §3 母體）
+
+不帶 `data_id` 的全市場查詢一律回 HTTP 400
+（`Your level is free. Please update your user level.`）。實測仍開放全市場查詢的只有
+`TaiwanStockInfo`、`TaiwanStockInfoWithWarrant`、`TaiwanStockTotalMarginPurchaseShortSale`；
+`TaiwanStockPrice`、`TaiwanStockShareholding`、`TaiwanStockMarketValue`、`TaiwanStockPER` 全被擋。
+另外匿名層級每小時請求數有上限，超過回 HTTP 402。
+
+因此**「市值前 N」在免費層級無法成立**：程式無法對全市場 4 碼普通股排名。
+處理方式是兩條路徑，且兩者都不會產生推測出來的市值：
+
+1. 有贊助（Sponsor）層級 `FINMIND_TOKEN` → 不帶 `--stocks-file`，走全市場排名（PRD §3 原義）。
+2. 無 token → 以 `--stocks-file` 指定候選母體，程式仍逐檔以
+   `收盤價 × 發行股數` 實測市值並排名，但**排名只在池內成立**，池外是否有更大的公司無法驗證。
+   程式會在執行時印出這個警告，`config/universe_candidates.txt` 也在檔頭寫明。
+
+本次 PoC 走路徑 2（環境未設 `FINMIND_TOKEN`）。
+
+## FinMind 作為 StockBoss 替代來源：其餘已知落差
+
+1. **董監持股／質押（PRD §8.10，1 分）**：PoC 已確認 FinMind 公開 dataset 未提供，且無法區分獨立董事。
    需另接 MOPS 或 Goodinfo，介面為 `sources/base.py` 的 `DirectorHoldingProvider`。
    未接上時一般產業實際可評滿分為 15，金融業為 8。
 2. **Interest Coverage（PRD §8.7，2 分）**：PRD 第一版規定「直接沿用 StockBoss 值」，
-   FinMind 無此欄位，本專案改以 `TTM 營業利益 ÷ |TTM 利息支出|` 重建。
+   FinMind 無此欄位，本專案改以 `TTM 營業利益 ÷ |TTM 利息支出|` 重建
+   （營業利益取自損益表單季值、利息費用取自現金流量表累計值，各自依期間語意還原 TTM）。
    **此為與 PRD 的實質偏離，需求方需確認**，否則分數無法與人工評分表對齊。
 3. **ROIC（PRD §8.9，1 分）**：PRD 未定義計算式，目前一律標 N/A，待需求方確認
    NOPAT 與投入資本的定義後實作。
@@ -88,6 +146,7 @@ PRD §12 要求所有分數、門檻與期間以設定檔管理，以支撐第�
 python -m pytest tests/ -q
 ```
 
+`tests/test_finmind_periods.py` 以 2330 FY2024 實際數列固定三張報表的年度／TTM 彙總行為。
 `tests/test_factors.py` 逐項覆蓋 PRD §15 點名的邊界值：EPS 負值與衰退恢復、
 股息下降剛好 5%、Payout 0%／50%／100%、ROE 剛好 12%／15%、股東權益 ≤0、
 質押剛好 20%、無利息負擔、金融業部分評分、未滿五年、單項缺漏。
@@ -96,3 +155,10 @@ python -m pytest tests/ -q
 
 `fixtures/synthetic_universe.json` 為**合成測試資料**（代碼 SYN001–SYN050），
 不對應任何真實上市櫃公司，僅供驗證管線行為，不得用於投資判斷。
+
+`config/universe_candidates.txt` 為人工提供的候選母體，**不是全市場掃描的結果**，
+不得視為「市值前 N」的權威定義；其存在只是為了讓免費層級能跑完整條管線。
+
+`output/` 內的評分結果由真實 FinMind 資料產生，但受上述資料落差影響
+（董監持股與 ROIC 全數 N/A、長期負債不含融資租賃、利息保障倍數為重建值），
+不得直接用於投資判斷。

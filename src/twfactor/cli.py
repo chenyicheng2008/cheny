@@ -1,9 +1,13 @@
 """CLI（PRD §2 操作流程、FR-08 手動更新、FR-10 匯出）。
 
 用法：
-  python -m twfactor run --top 50 --token $FINMIND_TOKEN     # 正式：FinMind 取數
+  python -m twfactor run --top 50 --token $FINMIND_TOKEN     # 正式：FinMind 全市場取市值前 50
+  python -m twfactor run --top 50 --stocks-file config/universe.txt   # 指定候選母體
   python -m twfactor run --top 50 --source fixture           # 離線：合成資料驗證管線
   python -m twfactor probe-schema --stocks 2330,2891,8299    # PoC：探測 FinMind 實際欄位
+
+FinMind 免費／匿名層級不允許「不帶 data_id 的全市場查詢」，因此不帶 --stocks/--stocks-file
+時需要贊助（Sponsor）層級的 FINMIND_TOKEN，否則會以 FinMindLevelError 中止。
 """
 
 from __future__ import annotations
@@ -28,7 +32,25 @@ def _build_source(args, field_map, years):
     from .sources.finmind import FinMindSource
     token = args.token or os.environ.get("FINMIND_TOKEN", "")
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
-    return FinMindSource(field_map, token=token, years=years, as_of=as_of)
+    return FinMindSource(field_map, token=token, years=years, as_of=as_of,
+                         cache_dir=getattr(args, "cache_dir", None),
+                         quota_wait=getattr(args, "quota_wait", 0.0),
+                         max_quota_retries=getattr(args, "quota_retries", 0))
+
+
+def _candidates(args) -> list[str] | None:
+    """候選母體：--stocks 逗號清單，或 --stocks-file（# 之後為註解，其餘以空白分隔）。"""
+    ids: list[str] = []
+    if getattr(args, "stocks", None):
+        ids += [s.strip() for s in args.stocks.split(",")]
+    if getattr(args, "stocks_file", None):
+        for line in Path(args.stocks_file).read_text(encoding="utf-8").splitlines():
+            ids += line.split("#")[0].split()
+    seen: dict[str, None] = {}
+    for i in ids:
+        if i:
+            seen.setdefault(i, None)
+    return list(seen) or None
 
 
 def cmd_run(args) -> int:
@@ -37,9 +59,16 @@ def cmd_run(args) -> int:
     years = params["periods"]["annual_years"]
 
     source = _build_source(args, field_map, years)
-    print(f"[1/4] 取得母體：{source.name}，市值前 {args.top} 檔 …", file=sys.stderr)
-    companies = source.top_by_market_cap(args.top)
+    candidates = _candidates(args)
+    scope = f"候選母體 {len(candidates)} 檔" if candidates else "全市場"
+    print(f"[1/4] 取得母體：{source.name}，{scope} 取市值前 {args.top} 檔 …", file=sys.stderr)
+    if args.source == "fixture":
+        companies = source.top_by_market_cap(args.top)
+    else:
+        companies = source.top_by_market_cap(args.top, candidates=candidates)
     print(f"      取得 {len(companies)} 檔", file=sys.stderr)
+    if candidates:
+        print("      ⚠ 排名僅在指定候選母體內成立，非全市場市值排名（PRD §3）", file=sys.stderr)
 
     print("[2/4] 取得並標準化財務資料 …", file=sys.stderr)
     facts_list = source.fetch_facts(companies)
@@ -139,14 +168,16 @@ def cmd_probe(args) -> int:
     field_map = load_field_map(args.fields)
     params = load_params(args.params)
     src = FinMindSource(field_map, token=args.token or os.environ.get("FINMIND_TOKEN", ""),
-                        years=params["periods"]["annual_years"])
+                        years=params["periods"]["annual_years"], cache_dir=args.cache_dir)
     result = src.probe_schema([s.strip() for s in args.stocks.split(",") if s.strip()])
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    for ds, per_stock in result.items():
+    for ds, info in result.items():
         print(f"\n== {ds} ==")
-        for sid, types in per_stock.items():
+        print(f"  期間語意：設定 {info['period_semantics_configured']}　"
+              f"實測 {info['period_semantics_observed']}")
+        for sid, types in info["types"].items():
             print(f"  {sid}: {len(types)} 個 type")
             for t in types[:40]:
                 print(f"    - {t}")
@@ -165,12 +196,20 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--source", choices=["finmind", "fixture"], default="finmind")
     r.add_argument("--token", default=None, help="FinMind API token（或用 FINMIND_TOKEN 環境變數）")
     r.add_argument("--as-of", default=None, help="資料基準日 YYYY-MM-DD，用於推定最新完整年度")
+    r.add_argument("--stocks", default=None,
+                   help="候選母體代碼，逗號分隔。免費層級無法做全市場掃描時使用")
+    r.add_argument("--stocks-file", default=None, help="候選母體檔案，每行一個代碼")
+    r.add_argument("--cache-dir", default=None, help="FinMind 回應快取目錄，供額度中斷後續跑")
+    r.add_argument("--quota-wait", type=float, default=0.0,
+                   help="遇 HTTP 402 時等待秒數後重試（需搭配 --cache-dir）")
+    r.add_argument("--quota-retries", type=int, default=0, help="HTTP 402 最大重試次數")
     r.add_argument("--outdir", default="output")
     r.set_defaults(func=cmd_run)
 
     p = sub.add_parser("probe-schema", help="探測 FinMind 實際欄位（PoC）")
     p.add_argument("--stocks", default="2330,2891,8299")
     p.add_argument("--token", default=None)
+    p.add_argument("--cache-dir", default=None, help="FinMind 回應快取目錄")
     p.add_argument("--out", default="output/poc_schema.json")
     p.set_defaults(func=cmd_probe)
 
