@@ -13,7 +13,7 @@
 | 匯出（CSV / Excel 三分頁 / JSON 快照） | ✅ 完成 |
 | FinMind 資料層 | ✅ 欄位對照已 PoC 實測回填（2026-09-15） |
 | 市值前 N 母體（PRD §3） | ❌ FinMind 免費層級不得做全市場查詢，需贊助層級 token 或外部指定候選母體 |
-| 非獨立董監持股／質押（PRD §8.10） | ⚠ FinMind 不提供；已實作 MOPS 匯出檔 provider，待餵入資料 |
+| 非獨立董監持股／質押（PRD §8.10） | ✅ 改由 TWSE／TPEx 公開 open data 取得（免金鑰） |
 | ROIC（PRD §8.9） | ✅ 依需求方 2026-09-15 指定計算式實作 |
 | 五年含息總報酬（PRD §9） | ⚠ 介面已留，計算式待 PoC 與 TradingView 交叉驗證 |
 
@@ -150,23 +150,43 @@ PRD §12 要求所有分數、門檻與期間以設定檔管理，以支撐第�
 
 ## FinMind 作為 StockBoss 替代來源：其餘已知落差
 
-1. **董監持股／質押（PRD §8.10，1 分）**：PoC 已確認 FinMind 公開 dataset 未提供，且無法區分獨立董事。
-   已實作 `sources/director_holding.py` 的 `CsvDirectorHoldingProvider`，
-   吃 MOPS「董事、監察人持股餘額明細資料」（t16sn02）的 CSV 匯出檔：
+1. **董監持股／質押（PRD §8.10，1 分）**：FinMind 不提供，但**證交所／櫃買中心的
+   公開 open data 就有，不需申請金鑰**：
+
+   | 市場 | 端點 |
+   |---|---|
+   | 上市 | `https://openapi.twse.com.tw/v1/opendata/t187ap11_L` |
+   | 上櫃 | `https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap11_O` |
 
    ```bash
    PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
-       --stocks-file config/universe_candidates.txt \
-       --director-holdings <你的 t16sn02 匯出檔>.csv
+       --stocks-file config/universe_candidates.txt --director-openapi
    ```
 
-   解析時排除職稱含「獨立董事／獨董」者（PRD §8.10）。依 PRD §19.4 的兩個必測點，
-   檔案缺「職稱」欄時整項回 N/A（不送出混入獨立董事的持股），缺質押欄時質押回 N/A。
+   也可改吃自行下載的 CSV：`--director-holdings <檔案>.csv`，兩者共用同一套解析。
 
-   ⚠ **沒有實作線上抓取**：PoC 環境連不到 MOPS
-   （`mops.twse.com.tw` 對本機 IP 回「因為安全性考量，您所執行的頁面無法呈現」），
-   線上解析邏輯無從驗證，依 §19.6 不出貨未經實測的解析程式碼。
-   未餵入檔案時此因子仍為 N/A，一般產業實際可評滿分為 15，金融業為 8。
+   **這份資料有兩個會直接算錯的坑，PoC 實測後都已處理**：
+
+   - **它是「內部人」全表，不是董監表。** 職稱涵蓋總經理、副總經理、協理、經理、
+     會計／財務部門主管、大股東、其他。只排除獨立董事並不夠 ——
+     必須以「職稱含董事或監察人」白名單挑選，再排除獨立董事。
+   - **法人董事佔多席時，同一法人的持股會每席重複列示。** 環球晶（6488）的
+     中美矽晶 223,007,864 股佔兩席、列了兩次，直接加總會超過其發行股數。
+     實測 887 家上櫃公司中 **380 家（43%）有此情形**，故以
+     （姓名, 目前持股, 設質股數）去重。這不是邊緣案例。
+
+   這份資料沒有發行股數，持股比例的分母取自 FinMind 的 `NumberOfSharesIssued`
+   （取得母體時已連同市值一併取回）。缺職稱欄時整項回 N/A，缺質押欄時質押回 N/A
+   （PRD §19.4 的兩個必測點）。
+
+   ⚠ **本 PoC 環境只跑得到上櫃**：`openapi.twse.com.tw` 與 `mops.twse.com.tw`
+   對本機 IP 回「因為安全性考量，您所執行的頁面無法呈現」，屬 IP 阻擋而非權限問題，
+   從一般網路環境執行即可取得上市資料。取不到的來源會印出警告、該市場標 N/A，
+   不會中斷評分。本次前 50 檔中 3 檔上櫃（信驊、環球晶、群聯）已評分，
+   47 檔上市仍為 N/A。
+
+   驗證：信驊持股 20.90%／質押 4.95%、環球晶 47.17%／0%、群聯 13.36%／7.79%，
+   與原始資料手算逐檔吻合。
 2. **Interest Coverage（PRD §8.7，2 分）**：PRD 第一版規定「直接沿用 StockBoss 值」，
    FinMind 無此欄位，本專案改以 `TTM 營業利益 ÷ |TTM 利息支出|` 重建
    （營業利益取自損益表單季值、利息費用取自現金流量表累計值，各自依期間語意還原 TTM）。

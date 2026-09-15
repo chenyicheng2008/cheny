@@ -32,17 +32,7 @@ def _build_source(args, field_map, years):
     from .sources.finmind import FinMindSource
     token = args.token or os.environ.get("FINMIND_TOKEN", "")
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
-    director_provider = None
-    if getattr(args, "director_holdings", None):
-        from .sources.director_holding import CsvDirectorHoldingProvider
-        director_provider = CsvDirectorHoldingProvider(args.director_holdings)
-        if not director_provider.has_title_column:
-            print("      ⚠ 董監持股檔無職稱欄，無法排除獨立董事，該因子將標 N/A（PRD §8.10）",
-                  file=sys.stderr)
-        elif not director_provider.has_pledge_column:
-            print("      ⚠ 董監持股檔無質押欄，質押比例將標 N/A（PRD §8.10）", file=sys.stderr)
     return FinMindSource(field_map, token=token, years=years, as_of=as_of,
-                         director_provider=director_provider,
                          cache_dir=getattr(args, "cache_dir", None),
                          quota_wait=getattr(args, "quota_wait", 0.0),
                          max_quota_retries=getattr(args, "quota_retries", 0))
@@ -63,6 +53,35 @@ def _candidates(args) -> list[str] | None:
     return list(seen) or None
 
 
+def _attach_director_provider(args, source, companies) -> None:
+    """建立董監持股 provider 並掛上資料來源（PRD §8.10）。
+
+    持股比例需要發行股數，而發行股數在取得母體時才會連同市值一起取回，
+    因此 provider 必須在 companies 之後才建得起來。
+    """
+    shares = {c["stock_id"]: c["shares_issued"] for c in companies if c.get("shares_issued")}
+    provider = None
+    if getattr(args, "director_holdings", None):
+        from .sources.director_holding import CsvDirectorHoldingProvider
+        provider = CsvDirectorHoldingProvider(args.director_holdings, shares_outstanding=shares)
+    elif getattr(args, "director_openapi", False):
+        from .sources.director_holding import OpenApiDirectorHoldingProvider
+        provider = OpenApiDirectorHoldingProvider(
+            shares_outstanding=shares,
+            cache_dir=(Path(args.cache_dir) / "director" if args.cache_dir else None))
+        for label, why in provider.failed_sources.items():
+            print(f"      ⚠ 董監持股來源「{label}」取得失敗，該市場將標 N/A：{why}", file=sys.stderr)
+    if provider is None:
+        return
+    print(f"      董監持股來源：{provider.name}", file=sys.stderr)
+    if not provider.has_title_column:
+        print("      ⚠ 來源無職稱欄，無法挑出非獨立董監，該因子將標 N/A（PRD §8.10）",
+              file=sys.stderr)
+    elif not provider.has_pledge_column:
+        print("      ⚠ 來源無質押欄，質押比例將標 N/A（PRD §8.10）", file=sys.stderr)
+    source.director_provider = provider
+
+
 def cmd_run(args) -> int:
     params = load_params(args.params)
     field_map = load_field_map(args.fields)
@@ -79,6 +98,8 @@ def cmd_run(args) -> int:
     print(f"      取得 {len(companies)} 檔", file=sys.stderr)
     if candidates:
         print("      ⚠ 排名僅在指定候選母體內成立，非全市場市值排名（PRD §3）", file=sys.stderr)
+
+    _attach_director_provider(args, source, companies)
 
     print("[2/4] 取得並標準化財務資料 …", file=sys.stderr)
     facts_list = source.fetch_facts(companies)
@@ -211,7 +232,9 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--stocks-file", default=None, help="候選母體檔案，每行一個代碼")
     r.add_argument("--cache-dir", default=None, help="FinMind 回應快取目錄，供額度中斷後續跑")
     r.add_argument("--director-holdings", default=None,
-                   help="MOPS t16sn02 董監持股餘額明細匯出檔（CSV），供 PRD §8.10 評分")
+                   help="MOPS 董監持股餘額明細匯出檔（CSV），供 PRD §8.10 評分")
+    r.add_argument("--director-openapi", action="store_true",
+                   help="直接取 TWSE／TPEx 公開 open data 的董監持股（免金鑰）")
     r.add_argument("--quota-wait", type=float, default=0.0,
                    help="遇 HTTP 402 時等待秒數後重試（需搭配 --cache-dir）")
     r.add_argument("--quota-retries", type=int, default=0, help="HTTP 402 最大重試次數")
