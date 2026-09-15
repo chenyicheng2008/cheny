@@ -103,8 +103,52 @@ PYTHONPATH=src python -m twfactor run --top 3 --source finmind \
 |---|---|
 | `FinMindLevelError: 帳號層級為 register` | 全市場查詢需贊助層級。改用 `--stocks-file` 或升級 token |
 | `FinMindQuotaError`（HTTP 402） | 每小時配額用盡。加 `--cache-dir` 與 `--quota-wait 600 --quota-retries 18` 後重跑，已取得的不會重抓 |
-| `⚠ 董監持股來源「上市」取得失敗` | 證交所對該 IP 阻擋（雲端主機常見）。從一般網路環境執行即可；取不到的市場會標 N/A，不中斷評分 |
+| `⚠ 董監持股來源「上市」取得失敗` | 取不到證交所資料，見下節。取不到的市場會標 N/A，不中斷評分 |
 | 某因子大量 N/A | 正常且刻意 —— 解析不到就標 N/A，不以推測值補齊（PRD §19.6）。原因寫在 snapshot 的 `missing` |
+
+### 取不到證交所（TWSE／MOPS）資料
+
+上市的董監持股來自證交所，症狀是收到一份 800 bytes 的 HTML
+（「因為安全性考量，您所執行的頁面無法呈現／FOR SECURITY REASONS, THIS PAGE CAN NOT BE ACCESSED」）
+而不是 JSON。**這其實是兩種不同的阻擋，處理方式不同，先分清楚是哪一種：**
+
+**（一）執行環境自己的對外白名單** —— 連線根本沒出去。
+
+容器／CI／公司網路常有 egress 白名單。徵狀是 TLS 隧道就被拒絕，看到的是
+`CONNECT tunnel failed, response 403` 或 `ProxyError`，而不是證交所的擋頁。
+實測受影響的網域有 `www.twse.com.tw`、`mopsov.twse.com.tw`、`data.gov.tw`。
+
+處理：把這些網域加進該環境的允許清單即可。Claude Code 的雲端執行環境是在環境的
+網路設定調整（見 <https://code.claude.com/docs/en/claude-code-on-the-web>）。
+
+**（二）證交所端的來源 IP 過濾** —— 連得到，但被它的邊界設備擋下。
+
+`openapi.twse.com.tw` 與 `mops.twse.com.tw` 屬於這類。實測結果：
+
+| 試法 | 結果 |
+|---|---|
+| 四種 User-Agent（curl／Chrome／python-requests／空值） | 全部回同一張 800B 擋頁 |
+| 補 `Referer`、`Accept-Language` 模擬瀏覽器 | 一樣被擋 |
+| 回應標頭 | 無 `Server`、無 CDN 標記，`Connection: close` |
+
+換句話說**不是認 User-Agent 也不是認標頭，是認來源 IP** —— 機房／雲端 IP 段封鎖，
+用來擋自動化爬取。同一個 IP 打櫃買中心（`www.tpex.org.tw`）完全正常，
+所以不是「政府網站全擋」，是證交所自己的政策。
+
+處理方式有三條，都不需要規避它的存取控制：
+
+1. **改在一般網路環境執行**（家用／公司網路）。IP 不在封鎖段，
+   `--director-openapi` 就會把上市那部分一併補齊。這是最省事的作法。
+2. **手動下載後餵檔**：瀏覽器開
+   <https://openapi.twse.com.tw/v1/opendata/t187ap11_L> 另存成 CSV，
+   改用 `--director-holdings <檔案>.csv`。兩條路徑共用同一套解析
+   （職稱白名單、法人重複列去重都一樣），結果相同。
+3. **改走政府資料開放平台** `data.gov.tw` 的鏡像（不同網域、不同 IP 政策），
+   但它常同時被上述（一）擋住，需先開通白名單。
+
+⚠ 不要用輪換 IP、住宅代理或偽裝指紋去繞過（二）。那是規避對方刻意設置的存取控制，
+違反使用條款，且一旦被認定為濫用，影響範圍會大於單一台機器。
+本專案不提供、也不應加入這類手段。
 
 ## 專案結構
 
