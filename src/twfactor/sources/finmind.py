@@ -626,8 +626,12 @@ class FinMindSource:
         facts.director_holding_pct = hold
         facts.director_pledge_pct = pledge
         if hold is None:
+            # 區分「沒設來源」與「有來源但沒涵蓋這一檔」——後者常見於只取得到單一市場時
+            provider = self.director_provider
             facts.missing_reasons["director_holding"] = (
-                f"董監持股來源未設定（FinMind 不提供；目前 provider={self.director_provider.name}）"
+                "董監持股來源未設定（FinMind 不提供此資料）"
+                if getattr(provider, "name", "none") == "none" else
+                f"董監持股來源未涵蓋本檔（provider={provider.name}）"
             )
         else:
             facts.provenance["director_holding"] = Provenance(

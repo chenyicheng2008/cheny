@@ -20,26 +20,91 @@
 ## 安裝與執行
 
 ```bash
+git clone <repo> && cd cheny
 pip install -r requirements.txt
-
-# 離線驗證管線（合成資料，不需網路）
-PYTHONPATH=src python -m twfactor run --top 50 --source fixture
-
-# 正式：以 FinMind 取全市場市值前 50 檔評分（需贊助層級 token，見下節）
-export FINMIND_TOKEN=<your sponsor token>
-PYTHONPATH=src python -m twfactor run --top 50 --source finmind
-
-# 免費／匿名層級：在指定候選母體內排名，並快取回應以便配額中斷後續跑
-PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
-    --stocks-file config/universe_candidates.txt \
-    --cache-dir .fincache --quota-wait 600 --quota-retries 18
-
-# PoC：探測 FinMind 財報 dataset 的實際欄位名稱與期間語意
-PYTHONPATH=src python -m twfactor probe-schema --stocks 2330,2891,8299,1256,4195
 ```
 
-輸出於 `output/`：`scores_*.csv`、`scores_*.xlsx`（一般產業／金融業／得分理由三分頁）、
-`snapshot_*.json`（含 provenance 與缺漏原因，PRD §16 資料保存）。
+需求：Python 3.11+。所有指令都從專案根目錄執行，且都要帶 `PYTHONPATH=src`。
+
+### 步驟 1：先跑離線冒煙測試（不需網路、不需 token）
+
+```bash
+PYTHONPATH=src python -m twfactor run --top 5 --source fixture
+```
+
+用 `fixtures/synthetic_universe.json` 的合成資料（代碼 SYN001–SYN050，非真實個股）
+跑完整條管線。看到排名表與三個輸出檔就表示安裝正確。
+
+### 步驟 2：正式評分
+
+先設 token（沒有也能跑，但配額低很多，逐檔取數約 200～300 次就會收到 HTTP 402）：
+
+```bash
+export FINMIND_TOKEN=<你的 FinMind token>
+```
+
+然後依你的 FinMind 層級擇一：
+
+**A. 有贊助（Sponsor）層級 token —— 符合 PRD §3 的全市場市值前 50**
+
+```bash
+PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
+    --director-openapi --cache-dir .fincache
+```
+
+**B. 免費或註冊層級 —— 在指定候選母體內排名（目前的 PoC 作法）**
+
+```bash
+PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
+    --stocks-file config/universe_candidates.txt \
+    --director-openapi --cache-dir .fincache \
+    --quota-wait 600 --quota-retries 18
+```
+
+不帶 `--stocks-file` 又沒有贊助層級時，程式會以 `FinMindLevelError` 明確中止，
+而不是回傳一份殘缺的母體。排名只在池內成立，執行時會印出警告。
+
+**C. 只想看幾檔**
+
+```bash
+PYTHONPATH=src python -m twfactor run --top 3 --source finmind \
+    --stocks 2330,2454,2891 --director-openapi --cache-dir .fincache
+```
+
+### 常用選項
+
+| 選項 | 用途 |
+|---|---|
+| `--cache-dir .fincache` | 快取 API 回應。**強烈建議一律加上** —— 配額中斷後重跑不會重抓，改參數重算也不花配額 |
+| `--director-openapi` | 從 TWSE／TPEx 公開 open data 取董監持股（免金鑰）。不加則該因子全部 N/A |
+| `--director-holdings <csv>` | 改用自行下載的 MOPS 匯出檔 |
+| `--quota-wait 600 --quota-retries 18` | 遇 HTTP 402 時等配額重置再續跑，需搭配 `--cache-dir` |
+| `--as-of 2026-09-15` | 指定資料基準日，用於推定最新完整年度（避免前視偏誤） |
+| `--top N` | 取前 N 檔 |
+| `--outdir <dir>` | 輸出目錄，預設 `output/` |
+| `--params` / `--fields` | 改用其他參數檔或欄位對照檔 |
+
+### 輸出
+
+每次執行在 `--outdir`（預設 `output/`）產生三個帶時間戳的檔案：
+
+| 檔案 | 內容 |
+|---|---|
+| `scores_*.csv` | PRD §13.1 結果表，一列一檔，含十項因子分數、總分、排名、標籤、缺漏說明 |
+| `scores_*.xlsx` | 同上，分「一般產業」「金融業」「得分理由」三個分頁 |
+| `snapshot_*.json` | 完整快照：每個欄位的 provenance（來源／原始欄位名／期間／抓取時間）與每個 N/A 的缺漏原因（PRD §16） |
+
+要查某一項分數為什麼是那個數字，看 `snapshot_*.json` 的 `cards[].factors[].rule`
+（命中的規則）與 `value`（判斷所用的原始值）；要查某一項為什麼是 N/A，看 `missing`。
+
+### 跑不動時
+
+| 現象 | 原因與處理 |
+|---|---|
+| `FinMindLevelError: 帳號層級為 register` | 全市場查詢需贊助層級。改用 `--stocks-file` 或升級 token |
+| `FinMindQuotaError`（HTTP 402） | 每小時配額用盡。加 `--cache-dir` 與 `--quota-wait 600 --quota-retries 18` 後重跑，已取得的不會重抓 |
+| `⚠ 董監持股來源「上市」取得失敗` | 證交所對該 IP 阻擋（雲端主機常見）。從一般網路環境執行即可；取不到的市場會標 N/A，不中斷評分 |
+| 某因子大量 N/A | 正常且刻意 —— 解析不到就標 N/A，不以推測值補齊（PRD §19.6）。原因寫在 snapshot 的 `missing` |
 
 ## 專案結構
 
