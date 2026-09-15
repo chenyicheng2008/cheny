@@ -116,21 +116,37 @@ PRD §12 要求所有分數、門檻與期間以設定檔管理，以支撐第�
 
 ### 三、免費層級不得做全市場查詢（影響 PRD §3 母體）
 
-不帶 `data_id` 的全市場查詢一律回 HTTP 400
-（`Your level is free. Please update your user level.`）。實測仍開放全市場查詢的只有
+不帶 `data_id` 的全市場查詢一律回 HTTP 400。實測仍開放全市場查詢的只有
 `TaiwanStockInfo`、`TaiwanStockInfoWithWarrant`、`TaiwanStockTotalMarginPurchaseShortSale`；
 `TaiwanStockPrice`、`TaiwanStockShareholding`、`TaiwanStockMarketValue`、`TaiwanStockPER` 全被擋。
-另外匿名層級每小時請求數有上限，超過回 HTTP 402。
+
+**註冊帳號的 token 不解決這件事。** 實測三種層級：
+
+| 層級 | 全市場查詢 | 錯誤訊息 |
+|---|---|---|
+| 匿名（無 token） | ❌ | `Your level is free.` |
+| 註冊帳號 token | ❌ | `Your level is register.` |
+| 贊助（Sponsor） | 未測（需付費） | — |
+
+註冊 token 的作用是**提高每小時請求配額**（匿名層級跑約 200～300 次就會收到 HTTP 402），
+逐檔查詢因此順暢很多，但全市場排名仍然打不開。
 
 因此**「市值前 N」在免費層級無法成立**：程式無法對全市場 4 碼普通股排名。
 處理方式是兩條路徑，且兩者都不會產生推測出來的市值：
 
 1. 有贊助（Sponsor）層級 `FINMIND_TOKEN` → 不帶 `--stocks-file`，走全市場排名（PRD §3 原義）。
-2. 無 token → 以 `--stocks-file` 指定候選母體，程式仍逐檔以
+2. 無 Sponsor token → 以 `--stocks-file` 指定候選母體，程式仍逐檔以
    `收盤價 × 發行股數` 實測市值並排名，但**排名只在池內成立**，池外是否有更大的公司無法驗證。
    程式會在執行時印出這個警告，`config/universe_candidates.txt` 也在檔頭寫明。
 
-本次 PoC 走路徑 2（環境未設 `FINMIND_TOKEN`）。
+本次 PoC 走路徑 2。候選池由 103 檔擴充為 234 檔後，**新增的 131 檔裡只有 3 檔擠進前 50**
+（致茂 2360 市值第 22 名、環球晶 6488 第 43 名、景碩 3189 第 48 名），
+前 50 的市值下緣由 0.374 兆升到 0.386 兆。
+
+這組數字說明兩件事：擴充池確實抓回原本漏掉的公司（致茂 0.885 兆排到第 22 名，
+原本整個漏掉），而且擴充的邊際效益正在收斂。但**收斂不等於完備** ——
+只要不是全市場掃描，就無法證明池外沒有更大的公司。要真正符合 PRD §3，
+仍然需要贊助層級 token。
 
 ## FinMind 作為 StockBoss 替代來源：其餘已知落差
 

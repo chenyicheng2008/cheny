@@ -100,11 +100,15 @@ class FinMindSource:
                   f"（{attempt + 1}/{self.max_quota_retries}）…", flush=True)
             time.sleep(self.quota_wait)
 
-        if resp.status_code == 400 and "level is free" in resp.text:
+        if resp.status_code == 400 and "Please update your user level" in resp.text:
+            # 實測：匿名為 level=free，註冊 token 為 level=register，兩者都不得做全市場查詢。
+            # 只看 "level is free" 會漏掉帶 token 的情況，故改以共同的提示句比對。
+            level = "register" if "level is register" in resp.text else "free"
             raise FinMindLevelError(
-                f"{dataset}: FinMind 目前層級不允許此查詢"
-                f"（{'未帶 data_id 的全市場查詢' if 'data_id' not in params else '此 dataset'}）。"
-                "需贊助（Sponsor）層級 token；請設定 FINMIND_TOKEN 或改用 --stocks 指定母體。"
+                f"{dataset}: FinMind 帳號層級為 {level}，不允許"
+                f"{'未帶 data_id 的全市場查詢' if 'data_id' not in params else '此 dataset'}。"
+                "全市場市值排名需贊助（Sponsor）層級 token；"
+                "或改用 --stocks/--stocks-file 指定候選母體。"
             )
         resp.raise_for_status()
         body = resp.json()

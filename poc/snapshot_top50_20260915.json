@@ -162,7 +162,7 @@
       "rank_pool": "general",
       "raw_total": 11.0,
       "weighted_total": 11.0,
-      "rank": 7,
+      "rank": 8,
       "status": "ok",
       "tags": [
         "高 ROIC"
@@ -316,7 +316,7 @@
       "rank_pool": "general",
       "raw_total": 3.0,
       "weighted_total": 3.0,
-      "rank": 35,
+      "rank": 36,
       "status": "ok",
       "tags": [],
       "flags": [],
@@ -546,7 +546,7 @@
       "rank_pool": "general",
       "raw_total": 4.0,
       "weighted_total": 4.0,
-      "rank": 31,
+      "rank": 32,
       "status": "ok",
       "tags": [],
       "flags": [],
@@ -850,7 +850,7 @@
       "rank_pool": "general",
       "raw_total": 3.0,
       "weighted_total": 3.0,
-      "rank": 35,
+      "rank": 36,
       "status": "ok",
       "tags": [],
       "flags": [],
@@ -1464,7 +1464,7 @@
       "rank_pool": "general",
       "raw_total": 12.0,
       "weighted_total": 12.0,
-      "rank": 5,
+      "rank": 6,
       "status": "ok",
       "tags": [
         "高 ROE 及 ROIC"
@@ -1603,6 +1603,84 @@
           "rule": "N/A：金融業部分評分矩陣不適用本因子（§8.12）",
           "value": "",
           "applicable": false
+        },
+        "director_holding": {
+          "score": null,
+          "rule": "N/A：董監持股來源未設定（FinMind 不提供；目前 provider=none）",
+          "value": "",
+          "applicable": true
+        }
+      }
+    },
+    {
+      "stock_id": "2360",
+      "stock_name": "致茂",
+      "rank_pool": "general",
+      "raw_total": 12.5,
+      "weighted_total": 12.5,
+      "rank": 3,
+      "status": "ok",
+      "tags": [
+        "高 ROE 及 ROIC"
+      ],
+      "flags": [],
+      "notes": [
+        "缺漏因子：非獨立董監持股（其餘照常加總，不按比例放大）"
+      ],
+      "factors": {
+        "eps": {
+          "score": 0.5,
+          "rule": "一次 >12% 大幅衰退（12.14→9.45），次年恢復至衰退前水準以上（12.49 ≥ 12.14）→ 穩定性 0.5；成長分 0（非逐年成長）",
+          "value": "9.96, 12.14, 9.45, 12.49, 27.68",
+          "applicable": true
+        },
+        "free_cash_flow": {
+          "score": 1,
+          "rule": "五年自由現金流全部 >0 → 1",
+          "value": "2.48103e+09, 5.17671e+09, 2.86249e+09, 4.61699e+09, 4.63559e+09",
+          "applicable": true
+        },
+        "dividend": {
+          "score": 1.0,
+          "rule": "五年皆有配發現金股利 → +1；四次年度比較年減幅出現 >5%（[(3, 17.51)]） → +0",
+          "value": "4.49961, 6.98089, 8.00061, 6.60007, 9",
+          "applicable": true
+        },
+        "payout_ratio": {
+          "score": 2.0,
+          "rule": "0% < 22.9066% < 50% → 2",
+          "value": "TTM Payout=22.9066%、TTM EPS=39.29",
+          "applicable": true
+        },
+        "net_margin": {
+          "score": 2.0,
+          "rule": "五年淨利率皆 >20% → 2（不與其他條件累加）",
+          "value": "24.4842, 23.662, 21.9301, 24.9961, 42.1247",
+          "applicable": true
+        },
+        "lt_debt_equity": {
+          "score": 1.0,
+          "rule": "LT-Debt/Equity 0.1015 < 0.5 → 1",
+          "value": "LT-Debt=3.30377e+09、Equity=3.25626e+10、Ratio=0.1015",
+          "applicable": true
+        },
+        "interest_coverage": {
+          "score": 2.0,
+          "rule": "342.209 > 20 → 2",
+          "value": "Interest Coverage=342.209",
+          "applicable": true
+        },
+        "roe": {
+          "score": 2.0,
+          "rule": "五年 ROE 皆 ≥15% → 2",
+          "value": "22.7224, 23.8725, 18.1893, 21.2188, 36.6246",
+          "applicable": true
+        },
+        "roic": {
+          "score": 1.0,
+          "rule": "五年 ROIC 皆 ≥10% → 1",
+          "value": "11.2377, 16.434, 14.4496, 15.232, 21.9677",
+          "applicable": true
         },
         "director_holding": {
           "score": null,
@@ -1924,7 +2002,7 @@
       "rank_pool": "general",
       "raw_total": 11.5,
       "weighted_total": 11.5,
-      "rank": 6,
+      "rank": 7,
       "status": "ok",
       "tags": [
         "高 ROE 及 ROIC"
@@ -2156,7 +2234,7 @@
       "rank_pool": "general",
       "raw_total": 3.0,
       "weighted_total": 3.0,
-      "rank": 35,
+      "rank": 36,
       "status": "ok",
       "tags": [],
       "flags": [],
@@ -2994,7 +3072,7 @@
       "rank_pool": "general",
       "raw_total": 4.0,
       "weighted_total": 4.0,
-      "rank": 31,
+      "rank": 32,
       "status": "ok",
       "tags": [],
       "flags": [],
@@ -3132,6 +3210,82 @@
           "score": 0.0,
           "rule": "五年 ROIC 未皆 ≥10% → 0",
           "value": "9.45024, 10.3178, 8.47058, 9.99356, 10.4274",
+          "applicable": true
+        },
+        "director_holding": {
+          "score": null,
+          "rule": "N/A：董監持股來源未設定（FinMind 不提供；目前 provider=none）",
+          "value": "",
+          "applicable": true
+        }
+      }
+    },
+    {
+      "stock_id": "6488",
+      "stock_name": "環球晶",
+      "rank_pool": "general",
+      "raw_total": 4.0,
+      "weighted_total": 4.0,
+      "rank": 32,
+      "status": "ok",
+      "tags": [],
+      "flags": [],
+      "notes": [
+        "缺漏因子：非獨立董監持股（其餘照常加總，不按比例放大）"
+      ],
+      "factors": {
+        "eps": {
+          "score": 0.0,
+          "rule": "出現 2 次 >12% 大幅衰退（第 [3, 4] 次比較）→ 穩定性 0；成長分 0（非逐年成長）",
+          "value": "27.27, 35.3, 45.41, 21.17, 15.3",
+          "applicable": true
+        },
+        "free_cash_flow": {
+          "score": 0.0,
+          "rule": "五年自由現金流未全部 >0 → 0",
+          "value": "2.3711e+10, 2.52082e+10, -1.81919e+10, -3.32779e+10, -2.07526e+10",
+          "applicable": true
+        },
+        "dividend": {
+          "score": 1.0,
+          "rule": "五年皆有配發現金股利 → +1；四次年度比較年減幅出現 >5%（[(1, 11.11), (4, 31.58)]） → +0",
+          "value": "18, 16, 16, 19, 13",
+          "applicable": true
+        },
+        "payout_ratio": {
+          "score": 1.0,
+          "rule": "50% ≤ 63.1068% < 100% → 1",
+          "value": "TTM Payout=63.1068%、TTM EPS=20.6",
+          "applicable": true
+        },
+        "net_margin": {
+          "score": 1.0,
+          "rule": "五年淨利率皆 >10% → 1",
+          "value": "19.4175, 21.8638, 27.9819, 15.7104, 12.0659",
+          "applicable": true
+        },
+        "lt_debt_equity": {
+          "score": 1.0,
+          "rule": "LT-Debt/Equity 0.4635 < 0.5 → 1",
+          "value": "LT-Debt=4.32441e+10、Equity=9.32951e+10、Ratio=0.4635",
+          "applicable": true
+        },
+        "interest_coverage": {
+          "score": 0.0,
+          "rule": "3.57648 ≤ 10 → 0",
+          "value": "Interest Coverage=3.57648",
+          "applicable": true
+        },
+        "roe": {
+          "score": 0.0,
+          "rule": "任一年 ROE <12% → 0",
+          "value": "26.0128, 28.2884, 29.7495, 10.8085, 7.83714",
+          "applicable": true
+        },
+        "roic": {
+          "score": 0.0,
+          "rule": "五年 ROIC 未皆 ≥10% → 0",
+          "value": "13.163, 18.4221, 14.1667, 7.25346, 4.27793",
           "applicable": true
         },
         "director_holding": {
@@ -3449,12 +3603,88 @@
       }
     },
     {
+      "stock_id": "3189",
+      "stock_name": "景碩",
+      "rank_pool": "general",
+      "raw_total": 5.0,
+      "weighted_total": 5.0,
+      "rank": 30,
+      "status": "ok",
+      "tags": [],
+      "flags": [],
+      "notes": [
+        "缺漏因子：非獨立董監持股（其餘照常加總，不按比例放大）"
+      ],
+      "factors": {
+        "eps": {
+          "score": 0.0,
+          "rule": "一次 >12% 大幅衰退（15.47→0.11），次年未恢復（0.11 < 15.47）→ 穩定性 0；成長分 0（非逐年成長）",
+          "value": "8.55, 15.47, 0.11, 0.11, 3.51",
+          "applicable": true
+        },
+        "free_cash_flow": {
+          "score": 0.0,
+          "rule": "五年自由現金流未全部 >0 → 0",
+          "value": "-2.80928e+09, -1.13269e+09, -3.87978e+09, -2.70292e+09, 1.97623e+09",
+          "applicable": true
+        },
+        "dividend": {
+          "score": 1.0,
+          "rule": "五年皆有配發現金股利 → +1；四次年度比較年減幅出現 >5%（[(3, 84.56)]） → +0",
+          "value": "1.00001, 4.5, 6.47564, 1.00011, 1.00017",
+          "applicable": true
+        },
+        "payout_ratio": {
+          "score": 2.0,
+          "rule": "0% < 16.9521% < 50% → 2",
+          "value": "TTM Payout=16.9521%、TTM EPS=5.9",
+          "applicable": true
+        },
+        "net_margin": {
+          "score": 0.0,
+          "rule": "未達任一條件 → 0",
+          "value": "12.5925, 19.0587, 4.36193, 4.3591, 6.90534",
+          "applicable": true
+        },
+        "lt_debt_equity": {
+          "score": 1.0,
+          "rule": "LT-Debt/Equity 0.2706 < 0.5 → 1",
+          "value": "LT-Debt=1.11971e+10、Equity=4.13732e+10、Ratio=0.2706",
+          "applicable": true
+        },
+        "interest_coverage": {
+          "score": 1.0,
+          "rule": "10 < 12.0574 ≤ 20 → 1",
+          "value": "Interest Coverage=12.0574",
+          "applicable": true
+        },
+        "roe": {
+          "score": 0.0,
+          "rule": "任一年 ROE <12% → 0",
+          "value": "13.6169, 20.4387, 2.98884, 3.33779, 6.56785",
+          "applicable": true
+        },
+        "roic": {
+          "score": 0.0,
+          "rule": "五年 ROIC 未皆 ≥10% → 0",
+          "value": "10.0135, 15.7773, 1.53162, 1.62091, 4.22471",
+          "applicable": true
+        },
+        "director_holding": {
+          "score": null,
+          "rule": "N/A：董監持股來源未設定（FinMind 不提供；目前 provider=none）",
+          "value": "",
+          "applicable": true
+        }
+      }
+    },
+    {
       "stock_id": "1301",
       "stock_name": "台塑",
       "rank_pool": "general",
       "raw_total": 4.0,
       "weighted_total": 4.0,
-      "rank": 31,
+      "rank": 32,
       "status": "ok",
       "tags": [],
       "flags": [],
@@ -3599,234 +3829,6 @@
           "applicable": true
         }
       }
-    },
-    {
-      "stock_id": "1326",
-      "stock_name": "台化",
-      "rank_pool": "general",
-      "raw_total": 4.0,
-      "weighted_total": 4.0,
-      "rank": 31,
-      "status": "ok",
-      "tags": [],
-      "flags": [],
-      "notes": [
-        "缺漏因子：ROIC、非獨立董監持股（其餘照常加總，不按比例放大）"
-      ],
-      "factors": {
-        "eps": {
-          "score": 0.0,
-          "rule": "五年內出現 EPS<0（[2025]）→ 穩定性與成長分均為 0（§8.1 / §10.1）",
-          "value": "6.56, 1.27, 1.46, 0.06, -0.99",
-          "applicable": true
-        },
-        "free_cash_flow": {
-          "score": 0.0,
-          "rule": "五年自由現金流未全部 >0 → 0",
-          "value": "2.2577e+10, 9.76116e+09, -2.41725e+09, 6.73368e+09, 1.07909e+10",
-          "applicable": true
-        },
-        "dividend": {
-          "score": 1.0,
-          "rule": "五年皆有配發現金股利 → +1；四次年度比較年減幅出現 >5%（[(2, 80.21), (4, 60.0)]） → +0",
-          "value": "2.5, 4.8, 0.95, 1.25, 0.5",
-          "applicable": true
-        },
-        "payout_ratio": {
-          "score": 2.0,
-          "rule": "0% < 21.1864% < 50% → 2",
-          "value": "TTM Payout=21.1864%、TTM EPS=2.36",
-          "applicable": true
-        },
-        "net_margin": {
-          "score": 0.0,
-          "rule": "未達任一條件 → 0",
-          "value": "11.6747, 2.42273, 2.31644, 0.32225, -2.01049",
-          "applicable": true
-        },
-        "lt_debt_equity": {
-          "score": 1.0,
-          "rule": "LT-Debt/Equity 0.1675 < 0.5 → 1",
-          "value": "LT-Debt=6.3845e+10、Equity=3.81102e+11、Ratio=0.1675",
-          "applicable": true
-        },
-        "interest_coverage": {
-          "score": 0.0,
-          "rule": "1.4656 ≤ 10 → 0",
-          "value": "Interest Coverage=1.4656",
-          "applicable": true
-        },
-        "roe": {
-          "score": 0.0,
-          "rule": "任一年 ROE <12% → 0",
-          "value": "9.6192, 2.46517, 2.00812, 0.367738, -1.51424",
-          "applicable": true
-        },
-        "roic": {
-          "score": null,
-          "rule": "N/A：缺少完整五年 ROIC",
-          "value": "",
-          "applicable": true
-        },
-        "director_holding": {
-          "score": null,
-          "rule": "N/A：董監持股來源未設定（FinMind 不提供；目前 provider=none）",
-          "value": "",
-          "applicable": true
-        }
-      }
-    },
-    {
-      "stock_id": "4904",
-      "stock_name": "遠傳",
-      "rank_pool": "general",
-      "raw_total": 11.0,
-      "weighted_total": 11.0,
-      "rank": 7,
-      "status": "ok",
-      "tags": [],
-      "flags": [],
-      "notes": [
-        "缺漏因子：非獨立董監持股（其餘照常加總，不按比例放大）"
-      ],
-      "factors": {
-        "eps": {
-          "score": 2.0,
-          "rule": "各年度下降幅度皆 ≤5%（或全為持平／成長）→ 穩定性 1；成長分 1（五年逐年嚴格成長）",
-          "value": "2.81, 2.94, 3.43, 3.56, 3.82",
-          "applicable": true
-        },
-        "free_cash_flow": {
-          "score": 1,
-          "rule": "五年自由現金流全部 >0 → 1",
-          "value": "2.38586e+10, 1.85505e+10, 1.87138e+10, 2.60233e+10, 2.65259e+10",
-          "applicable": true
-        },
-        "dividend": {
-          "score": 2.0,
-          "rule": "五年皆有配發現金股利 → +1；四次年度比較年減幅皆 ≤5% → +1",
-          "value": "3.25, 3.25, 3.25, 3.25, 3.56",
-          "applicable": true
-        },
-        "payout_ratio": {
-          "score": 1.0,
-          "rule": "50% ≤ 86.4078% < 100% → 1",
-          "value": "TTM Payout=86.4078%、TTM EPS=4.12",
-          "applicable": true
-        },
-        "net_margin": {
-          "score": 1.0,
-          "rule": "五年淨利率皆 >10% → 1",
-          "value": "10.8226, 10.887, 12.0537, 12.3723, 12.5663",
-          "applicable": true
-        },
-        "lt_debt_equity": {
-          "score": 1.0,
-          "rule": "LT-Debt/Equity 0.3943 < 0.5 → 1",
-          "value": "LT-Debt=3.79464e+10、Equity=9.62322e+10、Ratio=0.3943",
-          "applicable": true
-        },
-        "interest_coverage": {
-          "score": 2.0,
-          "rule": "21.943 > 20 → 2",
-          "value": "Interest Coverage=21.943",
-          "applicable": true
-        },
-        "roe": {
-          "score": 1.0,
-          "rule": "五年 ROE 皆 ≥12%（未全部 ≥15%）→ 1",
-          "value": "13.9694, 15.121, 12.4108, 13.99, 14.4094",
-          "applicable": true
-        },
-        "roic": {
-          "score": 0.0,
-          "rule": "五年 ROIC 未皆 ≥10% → 0",
-          "value": "7.21588, 8.62082, 7.99992, 9.38525, 10.4329",
-          "applicable": true
-        },
-        "director_holding": {
-          "score": null,
-          "rule": "N/A：董監持股來源未設定（FinMind 不提供；目前 provider=none）",
-          "value": "",
-          "applicable": true
-        }
-      }
-    },
-    {
-      "stock_id": "3481",
-      "stock_name": "群創",
-      "rank_pool": "general",
-      "raw_total": 1.0,
-      "weighted_total": 1.0,
-      "rank": 38,
-      "status": "ok",
-      "tags": [],
-      "flags": [],
-      "notes": [
-        "缺漏因子：ROIC、非獨立董監持股（其餘照常加總，不按比例放大）"
-      ],
-      "factors": {
-        "eps": {
-          "score": 0.0,
-          "rule": "五年內出現 EPS<0（[2022, 2023]）→ 穩定性與成長分均為 0（§8.1 / §10.1）",
-          "value": "5.51, -2.8, -2, 0.77, 0.03",
-          "applicable": true
-        },
-        "free_cash_flow": {
-          "score": 0.0,
-          "rule": "五年自由現金流未全部 >0 → 0",
-          "value": "7.36134e+10, -2.30313e+10, -1.1796e+10, 1.47828e+09, 8.4776e+09",
-          "applicable": true
-        },
-        "dividend": {
-          "score": 0.0,
-          "rule": "五年未皆有配發現金股利 → +0；四次年度比較年減幅出現 >5%（[(2, 100.0)]） → +0",
-          "value": "0.398838, 1.055, 0, 0, 1",
-          "applicable": true
-        },
-        "payout_ratio": {
-          "score": 0.0,
-          "rule": "128.205% ≥ 100% → 0",
-          "value": "TTM Payout=128.205%、TTM EPS=0.78",
-          "applicable": true
-        },
-        "net_margin": {
-          "score": 0.0,
-          "rule": "未達任一條件 → 0",
-          "value": "16.4379, -12.4778, -8.78374, 3.10717, 0.293438",
-          "applicable": true
-        },
-        "lt_debt_equity": {
-          "score": 1.0,
-          "rule": "LT-Debt/Equity 0.0820 < 0.5 → 1",
-          "value": "LT-Debt=1.83245e+10、Equity=2.23473e+11、Ratio=0.0820",
-          "applicable": true
-        },
-        "interest_coverage": {
-          "score": 0.0,
-          "rule": "0.963911 ≤ 10 → 0",
-          "value": "Interest Coverage=0.963911",
-          "applicable": true
-        },
-        "roe": {
-          "score": 0.0,
-          "rule": "任一年 ROE <12% → 0",
-          "value": "18.8798, -11.0337, -8.12579, 2.88058, 0.297707",
-          "applicable": true
-        },
-        "roic": {
-          "score": null,
-          "rule": "N/A：缺少完整五年 ROIC",
-          "value": "",
-          "applicable": true
-        },
-        "director_holding": {
-          "score": null,
-          "rule": "N/A：董監持股來源未設定（FinMind 不提供；目前 provider=none）",
-          "value": "",
-          "applicable": true
-        }
-      }
     }
   ],
   "provenance": {
@@ -3835,77 +3837,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -3914,77 +3916,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -3993,77 +3995,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4072,77 +4074,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4151,77 +4153,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4230,42 +4232,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4274,77 +4276,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4353,77 +4355,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4432,77 +4434,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4511,42 +4513,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4555,77 +4557,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4634,63 +4636,63 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4699,42 +4701,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4743,77 +4745,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4822,77 +4824,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4901,77 +4903,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -4980,77 +4982,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5059,77 +5061,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5138,42 +5140,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5182,77 +5184,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5261,42 +5263,121 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      }
+    },
+    "2360": {
+      "eps": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "EPS",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "operating_cash_flow": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "CashFlowsFromOperatingActivities",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "capex": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "PropertyAndPlantAndEquipment",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "revenue": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "Revenue",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "net_income": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "IncomeAfterTaxes",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "total_equity": {
+        "source": "FinMind:TaiwanStockBalanceSheet",
+        "field_name": "Equity",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "long_term_debt": {
+        "source": "FinMind:TaiwanStockBalanceSheet",
+        "field_name": "LongtermBorrowings",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "operating_income": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "OperatingIncome",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "roic": {
+        "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
+        "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
+      },
+      "interest_expense": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "InterestExpense",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "cash_dividend": {
+        "source": "FinMind:TaiwanStockDividend",
+        "field_name": "CashEarningsDistribution+CashStatutorySurplus",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5305,42 +5386,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5349,77 +5430,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5428,77 +5509,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5507,77 +5588,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5586,77 +5667,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5665,42 +5746,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5709,77 +5790,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5788,63 +5869,63 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5853,77 +5934,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -5932,77 +6013,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6011,42 +6092,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6055,42 +6136,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6099,35 +6180,35 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       }
     },
@@ -6136,77 +6217,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6215,77 +6296,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6294,77 +6375,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6373,42 +6454,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6417,63 +6498,63 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6482,77 +6563,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6561,77 +6642,156 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      }
+    },
+    "6488": {
+      "eps": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "EPS",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "operating_cash_flow": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "CashFlowsFromOperatingActivities",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "capex": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "PropertyAndPlantAndEquipment",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "revenue": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "Revenue",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "net_income": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "IncomeAfterTaxes",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "total_equity": {
+        "source": "FinMind:TaiwanStockBalanceSheet",
+        "field_name": "Equity",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "long_term_debt": {
+        "source": "FinMind:TaiwanStockBalanceSheet",
+        "field_name": "LongtermBorrowings+BondsPayable",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "operating_income": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "OperatingIncome",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "roic": {
+        "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
+        "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
+      },
+      "interest_expense": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "InterestExpense",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "cash_dividend": {
+        "source": "FinMind:TaiwanStockDividend",
+        "field_name": "CashEarningsDistribution+CashStatutorySurplus",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6640,42 +6800,42 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTax",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "（無借款科目，認定為 0）",
         "period": "2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "該年度期末資產負債表有回傳但無長期借款／應付公司債科目；FinMind 不列示零餘額科目，依需求方確認認定為 0"
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6684,77 +6844,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6763,77 +6923,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6842,77 +7002,156 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      }
+    },
+    "3189": {
+      "eps": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "EPS",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "operating_cash_flow": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "CashFlowsFromOperatingActivities",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "capex": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "PropertyAndPlantAndEquipment",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "revenue": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "Revenue",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "net_income": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "IncomeAfterTaxes",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "total_equity": {
+        "source": "FinMind:TaiwanStockBalanceSheet",
+        "field_name": "Equity",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "long_term_debt": {
+        "source": "FinMind:TaiwanStockBalanceSheet",
+        "field_name": "LongtermBorrowings",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "operating_income": {
+        "source": "FinMind:TaiwanStockFinancialStatements",
+        "field_name": "OperatingIncome",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "roic": {
+        "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
+        "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
+      },
+      "interest_expense": {
+        "source": "FinMind:TaiwanStockCashFlowsStatement",
+        "field_name": "InterestExpense",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
+        "note": ""
+      },
+      "cash_dividend": {
+        "source": "FinMind:TaiwanStockDividend",
+        "field_name": "CashEarningsDistribution+CashStatutorySurplus",
+        "period": "2021–2025",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6921,70 +7160,70 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     },
@@ -6993,293 +7232,77 @@
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "EPS",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_cash_flow": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "CashFlowsFromOperatingActivities",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "capex": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "PropertyAndPlantAndEquipment",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "revenue": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "Revenue",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "net_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "IncomeAfterTaxes",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "total_equity": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "Equity",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "long_term_debt": {
         "source": "FinMind:TaiwanStockBalanceSheet",
         "field_name": "LongtermBorrowings+BondsPayable",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "operating_income": {
         "source": "FinMind:TaiwanStockFinancialStatements",
         "field_name": "OperatingIncome",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "roic": {
         "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
         "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
       },
       "interest_expense": {
         "source": "FinMind:TaiwanStockCashFlowsStatement",
         "field_name": "InterestExpense",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       },
       "cash_dividend": {
         "source": "FinMind:TaiwanStockDividend",
         "field_name": "CashEarningsDistribution+CashStatutorySurplus",
         "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      }
-    },
-    "1326": {
-      "eps": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "EPS",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "operating_cash_flow": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "CashFlowsFromOperatingActivities",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "capex": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "PropertyAndPlantAndEquipment",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "revenue": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "Revenue",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "net_income": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "IncomeAfterTaxes",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "total_equity": {
-        "source": "FinMind:TaiwanStockBalanceSheet",
-        "field_name": "Equity",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "long_term_debt": {
-        "source": "FinMind:TaiwanStockBalanceSheet",
-        "field_name": "LongtermBorrowings+BondsPayable",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "operating_income": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "OperatingIncome",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "interest_expense": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "InterestExpense",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "cash_dividend": {
-        "source": "FinMind:TaiwanStockDividend",
-        "field_name": "CashEarningsDistribution+CashStatutorySurplus",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      }
-    },
-    "4904": {
-      "eps": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "EPS",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "operating_cash_flow": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "CashFlowsFromOperatingActivities",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "capex": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "PropertyAndPlantAndEquipment",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "revenue": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "Revenue",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "net_income": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "IncomeAfterTaxes",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "total_equity": {
-        "source": "FinMind:TaiwanStockBalanceSheet",
-        "field_name": "Equity",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "long_term_debt": {
-        "source": "FinMind:TaiwanStockBalanceSheet",
-        "field_name": "LongtermBorrowings+BondsPayable",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "operating_income": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "OperatingIncome",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "roic": {
-        "source": "FinMind:TaiwanStockFinancialStatements+TaiwanStockBalanceSheet",
-        "field_name": "稅後營業利益 ÷（股東權益＋有息負債），期末值",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": "有效稅率＝所得稅費用÷稅前淨利（同年度）；有息負債＝短期借款＋長期借款＋應付公司債，不含一年內到期長期負債與租賃負債（FinMind 無此科目），分母可能低估"
-      },
-      "interest_expense": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "InterestExpense",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "cash_dividend": {
-        "source": "FinMind:TaiwanStockDividend",
-        "field_name": "CashEarningsDistribution+CashStatutorySurplus",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      }
-    },
-    "3481": {
-      "eps": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "EPS",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "operating_cash_flow": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "CashFlowsFromOperatingActivities",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "capex": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "PropertyAndPlantAndEquipment",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "revenue": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "Revenue",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "net_income": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "IncomeAfterTaxes",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "total_equity": {
-        "source": "FinMind:TaiwanStockBalanceSheet",
-        "field_name": "Equity",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "long_term_debt": {
-        "source": "FinMind:TaiwanStockBalanceSheet",
-        "field_name": "LongtermBorrowings+BondsPayable",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "operating_income": {
-        "source": "FinMind:TaiwanStockFinancialStatements",
-        "field_name": "OperatingIncome",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
-        "note": ""
-      },
-      "interest_expense": {
-        "source": "FinMind:TaiwanStockCashFlowsStatement",
-        "field_name": "InterestExpense",
-        "period": "2021–2025",
-        "fetched_at": "2026-09-15T07:49:49+00:00",
+        "fetched_at": "2026-09-15T08:04:57+00:00",
         "note": ""
       }
     }
@@ -7364,6 +7387,9 @@
       "interest_coverage": "缺少營業利益科目",
       "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
     },
+    "2360": {
+      "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
+    },
     "2884": {
       "free_cash_flow": "缺少營業現金流或資本支出科目",
       "roic": "缺少 ROIC 所需科目（營業利益／稅前淨利／所得稅費用／股東權益／短期借款／長期借款）之完整五年序列",
@@ -7444,6 +7470,9 @@
     "3045": {
       "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
     },
+    "6488": {
+      "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
+    },
     "5880": {
       "free_cash_flow": "缺少營業現金流或資本支出科目",
       "roic": "缺少 ROIC 所需科目（營業利益／稅前淨利／所得稅費用／股東權益／短期借款／長期借款）之完整五年序列",
@@ -7459,22 +7488,14 @@
     "1216": {
       "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
     },
+    "3189": {
+      "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
+    },
     "1301": {
       "roic": "五年內有稅前淨利 ≤0 之年度，無法導出有效稅率（不以推估稅率補齊）",
       "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
     },
     "3665": {
-      "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
-    },
-    "1326": {
-      "roic": "五年內有稅前淨利 ≤0 之年度，無法導出有效稅率（不以推估稅率補齊）",
-      "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
-    },
-    "4904": {
-      "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
-    },
-    "3481": {
-      "roic": "五年內有稅前淨利 ≤0 之年度，無法導出有效稅率（不以推估稅率補齊）",
       "director_holding": "董監持股來源未設定（FinMind 不提供；目前 provider=none）"
     }
   }

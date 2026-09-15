@@ -134,8 +134,9 @@ total_return:
   method: reinvest_cash_dividend  # 由 price + dividend 自行計算，計算式見 sources/finmind.py
   note: "FinMind TaiwanStockPrice 為未還原價；需以除息日再投資方式重建，PoC 需與 TradingView Total Return 交叉驗證"
 
-# ⚠ PoC 實測：FinMind 免費／匿名層級「不帶 data_id 的全市場查詢」一律回 HTTP 400
-#   （msg: "Your level is free. Please update your user level."）。
+# ⚠ PoC 實測：「不帶 data_id 的全市場查詢」一律回 HTTP 400。
+#   匿名為 "Your level is free."，帶註冊 token 為 "Your level is register."，
+#   兩者都被擋 —— 註冊 token 只提高請求配額，不解鎖全市場查詢，需贊助（Sponsor）層級。
 #   實測仍開放全市場查詢者僅 TaiwanStockInfo / TaiwanStockInfoWithWarrant /
 #   TaiwanStockTotalMarginPurchaseShortSale；TaiwanStockPrice、TaiwanStockShareholding、
 #   TaiwanStockMarketValue、TaiwanStockPER 等皆被擋。
