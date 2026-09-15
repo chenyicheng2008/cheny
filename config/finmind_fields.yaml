@@ -1,0 +1,93 @@
+# FinMind 欄位對照（PRD §19 Data Source PoC 的產出物骨架）
+#
+# ⚠ 狀態：candidates 欄位為「待 PoC 實測確認」。FinMind 的
+#   TaiwanStockFinancialStatements / BalanceSheet / CashFlowsStatement
+#   以 (date, stock_id, type, origin_name, value) 長表形式回傳，`type` 的
+#   實際字串會隨會計科目與公司而異，且金融業科目與一般產業不同。
+#   請先執行  `python -m twfactor probe-schema --stocks 2330,2891,8299`
+#   取得各 dataset 實際出現的 type 清單，再回填 confirmed 欄位。
+#   confirmed 若有值則優先採用，否則依序嘗試 candidates。
+
+datasets:
+  info: TaiwanStockInfo
+  price: TaiwanStockPrice
+  income_statement: TaiwanStockFinancialStatements
+  balance_sheet: TaiwanStockBalanceSheet
+  cash_flow: TaiwanStockCashFlowsStatement
+  dividend: TaiwanStockDividend
+  shareholding: TaiwanStockShareholding
+
+fields:
+  revenue:
+    dataset: income_statement
+    confirmed: null
+    candidates: [Revenue, OperatingRevenue, TotalOperatingRevenue, NetSales]
+  operating_income:
+    dataset: income_statement
+    confirmed: null
+    candidates: [OperatingIncome, OperatingProfit, NetOperatingIncome]
+  net_income:
+    dataset: income_statement
+    confirmed: null
+    candidates: [NetIncome, ProfitLoss, TotalConsolidatedProfitForThePeriod, IncomeAfterTaxes, NetIncomeLoss]
+  eps:
+    dataset: income_statement
+    confirmed: null
+    candidates: [EPS, BasicEarningsPerShare, EarningsPerShare]
+  interest_expense:
+    dataset: income_statement
+    confirmed: null
+    candidates: [InterestExpense, FinanceCosts, NoninterestExpense]
+  total_equity:
+    dataset: balance_sheet
+    confirmed: null
+    candidates: [Equity, TotalEquity, EquityAttributableToOwnersOfParent, StockholdersEquity]
+  long_term_debt:
+    # PRD §8.6：到期日一年以上之借款，含長期融資租賃；不含一年內到期短期借款
+    dataset: balance_sheet
+    confirmed: null
+    aggregate: sum
+    candidates: [LongTermBorrowings, LongTermLoans, BondsPayable, LongTermNotesAndAccountsPayable, LeaseLiabilitiesNoncurrent]
+  operating_cash_flow:
+    dataset: cash_flow
+    confirmed: null
+    candidates: [CashFlowsFromOperatingActivities, NetCashProvidedByOperatingActivities]
+  capex:
+    dataset: cash_flow
+    confirmed: null
+    aggregate: sum
+    candidates: [PropertyAndPlantAndEquipment, AcquisitionOfPropertyPlantAndEquipment, PaymentsToAcquirePropertyPlantAndEquipment]
+  cash_dividend:
+    dataset: dividend
+    confirmed: CashEarningsDistribution
+    candidates: [CashEarningsDistribution, CashStatutorySurplus]
+    aggregate: sum
+  shares_issued:
+    dataset: shareholding
+    confirmed: NumberOfSharesIssued
+    candidates: [NumberOfSharesIssued]
+
+# PRD §8.10 非獨立董監持股與質押
+# FinMind 公開 dataset 未提供董監持股/質押明細，亦無法區分獨立董事。
+# 第一版該因子由外部來源注入（見 sources/base.py DirectorHoldingProvider），
+# 未注入時標示 N/A（不補分、不按比例放大，依 PRD §10）。
+director_holding:
+  available_in_finmind: false
+  fallback_source: null          # 例如 MOPS 董監持股餘額明細資料 / Goodinfo
+  note: "PoC 必測：來源是否能排除獨立董事、是否提供質押比例（PRD §19.4 公司治理）"
+
+# PRD §9 五年含股息再投資總報酬
+total_return:
+  method: reinvest_cash_dividend  # 由 price + dividend 自行計算，計算式見 sources/finmind.py
+  note: "FinMind TaiwanStockPrice 為未還原價；需以除息日再投資方式重建，PoC 需與 TradingView Total Return 交叉驗證"
+
+# 金融業判定（PRD §8.12）。TaiwanStockInfo.industry_category 之中文分類。
+# ⚠ PRD §4 要求 StockBoss / Goodinfo 雙分類並存且互不覆蓋，但未指定
+#   金融業部分評分要以哪一欄觸發。此處暫以 FinMind 分類為主判定欄位，待需求方確認。
+financial_industry_categories:
+  - 金融保險
+  - 金融保險業
+  - 金融業
+  - 銀行
+  - 保險
+  - 證券
