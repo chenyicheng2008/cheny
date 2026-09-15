@@ -32,7 +32,17 @@ def _build_source(args, field_map, years):
     from .sources.finmind import FinMindSource
     token = args.token or os.environ.get("FINMIND_TOKEN", "")
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
+    director_provider = None
+    if getattr(args, "director_holdings", None):
+        from .sources.director_holding import CsvDirectorHoldingProvider
+        director_provider = CsvDirectorHoldingProvider(args.director_holdings)
+        if not director_provider.has_title_column:
+            print("      ⚠ 董監持股檔無職稱欄，無法排除獨立董事，該因子將標 N/A（PRD §8.10）",
+                  file=sys.stderr)
+        elif not director_provider.has_pledge_column:
+            print("      ⚠ 董監持股檔無質押欄，質押比例將標 N/A（PRD §8.10）", file=sys.stderr)
     return FinMindSource(field_map, token=token, years=years, as_of=as_of,
+                         director_provider=director_provider,
                          cache_dir=getattr(args, "cache_dir", None),
                          quota_wait=getattr(args, "quota_wait", 0.0),
                          max_quota_retries=getattr(args, "quota_retries", 0))
@@ -200,6 +210,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="候選母體代碼，逗號分隔。免費層級無法做全市場掃描時使用")
     r.add_argument("--stocks-file", default=None, help="候選母體檔案，每行一個代碼")
     r.add_argument("--cache-dir", default=None, help="FinMind 回應快取目錄，供額度中斷後續跑")
+    r.add_argument("--director-holdings", default=None,
+                   help="MOPS t16sn02 董監持股餘額明細匯出檔（CSV），供 PRD §8.10 評分")
     r.add_argument("--quota-wait", type=float, default=0.0,
                    help="遇 HTTP 402 時等待秒數後重試（需搭配 --cache-dir）")
     r.add_argument("--quota-retries", type=int, default=0, help="HTTP 402 最大重試次數")

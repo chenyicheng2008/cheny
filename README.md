@@ -13,7 +13,7 @@
 | 匯出（CSV / Excel 三分頁 / JSON 快照） | ✅ 完成 |
 | FinMind 資料層 | ✅ 欄位對照已 PoC 實測回填（2026-09-15） |
 | 市值前 N 母體（PRD §3） | ❌ FinMind 免費層級不得做全市場查詢，需贊助層級 token 或外部指定候選母體 |
-| 非獨立董監持股／質押（PRD §8.10） | ❌ FinMind 不提供，需另接來源，目前標 N/A |
+| 非獨立董監持股／質押（PRD §8.10） | ⚠ FinMind 不提供；已實作 MOPS 匯出檔 provider，待餵入資料 |
 | 五年含息總報酬（PRD §9） | ⚠ 介面已留，計算式待 PoC 與 TradingView 交叉驗證 |
 
 ## 安裝與執行
@@ -100,6 +100,10 @@ PRD §12 要求所有分數、門檻與期間以設定檔管理，以支撐第�
 - **長期借款**：實際拼法是 `LongtermBorrowings`（小寫 t），原設定拼成 `LongTermBorrowings`
   永遠解析不到。現以 `LongtermBorrowings + BondsPayable` 合計。
 - FinMind 資產負債表**沒有**「租賃負債－非流動」科目，故長期負債不含長期融資租賃（低估）。
+- FinMind **不回傳餘額為零的會計科目**，因此「確實無長期借款」與「資料缺漏」在長表上
+  長得一樣。需求方 2026-09-15 確認：該年度期末資產負債表本身有回傳、卻完全沒有任何
+  借款科目時，認定長期借款為 0 並照常評分（影響大立光、信驊、創意等）；
+  整年沒有期末資產負債表才標 N/A。此判定會寫進 snapshot 的 provenance note。
 - 現金流量表**沒有**取得無形資產等科目，資本支出僅含不動產廠房設備（低估）。
 - 金融業（2891）無 `OperatingIncome`、無 `PropertyAndPlantAndEquipment`、
   無長期借款科目 → 對應因子標 N/A，符合 PRD §8.12 部分評分。
@@ -125,14 +129,33 @@ PRD §12 要求所有分數、門檻與期間以設定檔管理，以支撐第�
 ## FinMind 作為 StockBoss 替代來源：其餘已知落差
 
 1. **董監持股／質押（PRD §8.10，1 分）**：PoC 已確認 FinMind 公開 dataset 未提供，且無法區分獨立董事。
-   需另接 MOPS 或 Goodinfo，介面為 `sources/base.py` 的 `DirectorHoldingProvider`。
-   未接上時一般產業實際可評滿分為 15，金融業為 8。
+   已實作 `sources/director_holding.py` 的 `CsvDirectorHoldingProvider`，
+   吃 MOPS「董事、監察人持股餘額明細資料」（t16sn02）的 CSV 匯出檔：
+
+   ```bash
+   PYTHONPATH=src python -m twfactor run --top 50 --source finmind \
+       --stocks-file config/universe_candidates.txt \
+       --director-holdings <你的 t16sn02 匯出檔>.csv
+   ```
+
+   解析時排除職稱含「獨立董事／獨董」者（PRD §8.10）。依 PRD §19.4 的兩個必測點，
+   檔案缺「職稱」欄時整項回 N/A（不送出混入獨立董事的持股），缺質押欄時質押回 N/A。
+
+   ⚠ **沒有實作線上抓取**：PoC 環境連不到 MOPS
+   （`mops.twse.com.tw` 對本機 IP 回「因為安全性考量，您所執行的頁面無法呈現」），
+   線上解析邏輯無從驗證，依 §19.6 不出貨未經實測的解析程式碼。
+   未餵入檔案時此因子仍為 N/A，一般產業實際可評滿分為 15，金融業為 8。
 2. **Interest Coverage（PRD §8.7，2 分）**：PRD 第一版規定「直接沿用 StockBoss 值」，
    FinMind 無此欄位，本專案改以 `TTM 營業利益 ÷ |TTM 利息支出|` 重建
    （營業利益取自損益表單季值、利息費用取自現金流量表累計值，各自依期間語意還原 TTM）。
-   **此為與 PRD 的實質偏離，需求方需確認**，否則分數無法與人工評分表對齊。
-3. **ROIC（PRD §8.9，1 分）**：PRD 未定義計算式，目前一律標 N/A，待需求方確認
-   NOPAT 與投入資本的定義後實作。
+   此為與 PRD 的實質偏離，**需求方已於 2026-09-15 確認接受重建值**；
+   仍須留意分數無法與人工 StockBoss 評分表逐項對齊。
+3. **ROIC（PRD §8.9，1 分）**：PRD 未定義計算式，目前一律標 N/A。
+   需求方已同意提供計算式，**計算式到位前維持 N/A**。
+   需要定義的是 NOPAT 的分子（稅前營業利益 × (1 − 有效稅率)？稅後淨利？）
+   與投入資本的分母（股東權益 ＋ 有息負債？總資產 − 流動負債？期末或平均？）。
+   FinMind 側可取得的科目：`OperatingIncome`、`PreTaxIncome`、`TAX`、`Equity`、
+   `LongtermBorrowings`、`BondsPayable`、`ShorttermBorrowings`、`TotalAssets`、`CurrentLiabilities`。
 4. **淨利率／ROE**：PRD 未定義是否用歸母淨利、期末或平均權益；目前採
    稅後淨利 ÷ 營收、稅後淨利 ÷ 期末權益，需與人工評分表比對後定案。
 5. **金融業判定**：PRD §4 要求 StockBoss／Goodinfo 雙分類並存互不覆蓋，但未指定

@@ -196,6 +196,12 @@ class FinMindSource:
         return {}, ""
 
     @staticmethod
+    def _has_year_end(pools: dict[str, dict[str, float]], year: int) -> bool:
+        """該年度是否有期末（12 月）資料。用來區分「科目餘額為零」與「整年無資料」。"""
+        prefix = f"{year}-12"
+        return any(d.startswith(prefix) for series in pools.values() for d in series)
+
+    @staticmethod
     def _field_names(spec: dict) -> list[str]:
         """confirmed（字串或字串陣列）優先，其後才是未經實測的 candidates。"""
         confirmed = spec.get("confirmed")
@@ -434,12 +440,20 @@ class FinMindSource:
         facts.long_term_debt = latest("long_term_debt", ltd_s)
         if facts.long_term_debt is not None:
             prov("long_term_debt", ltd_used, False)
+        elif self._has_year_end(balance, years[-1]):
+            # FinMind 不回傳餘額為零的會計科目，因此「確實無長期借款」與「資料缺漏」
+            # 在長表上長得一樣。需求方 2026-09-15 確認：只要該年度期末資產負債表本身
+            # 有回傳，卻完全沒有任何借款科目，即認定長期借款為 0（而非缺漏）。
+            facts.long_term_debt = 0.0
+            facts.provenance["long_term_debt"] = Provenance(
+                source=f"FinMind:{ds['balance_sheet']}", field_name="（無借款科目，認定為 0）",
+                period=str(years[-1]), fetched_at=self._fetched_at,
+                note="該年度期末資產負債表有回傳但無長期借款／應付公司債科目；"
+                     "FinMind 不列示零餘額科目，依需求方確認認定為 0",
+            )
         else:
-            # FinMind 對餘額為零的科目不回傳，因此無法區分「確實無長期負債」與「資料缺漏」。
-            # 依 PRD §19.6 一律標 N/A，不假設為 0（假設為 0 會直接送出 1 分）。
             facts.missing_reasons["lt_debt_equity"] = (
-                f"{years[-1]} 年底無長期借款／應付公司債科目；FinMind 不回傳餘額為零之科目，"
-                "無法區分「無長期負債」與「資料缺漏」，故標 N/A"
+                f"{years[-1]} 年底無資產負債表資料，無法判斷長期負債"
             )
 
         # ROIC 需 NOPAT 與投入資本；PRD 未定義公式，PoC 確認科目前一律 N/A
