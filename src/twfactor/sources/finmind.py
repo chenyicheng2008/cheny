@@ -611,10 +611,15 @@ class FinMindSource:
             if not by_year:
                 facts.missing_reasons["dividend"] = "FinMind 無配息紀錄"
 
+        # PRD §8.4 股息支付率 ＝ 最新完整年度現金股利 ÷ TTM EPS（需求方 2026-09-15 確認）。
+        # 分子為年度值、分母為最近四季滾動值，期間刻意不對齊：股利是一年一議的年度決策，
+        # 沒有對應的 TTM 分子。已知偏誤：EPS 快速成長時分母跑在分子前面，支付率會被低估。
+        # TTM EPS 為 0 時比率無定義，標 N/A 而非視為 0%；為負時比率設 0，
+        # 由 score_payout_ratio 依 TTM EPS<0 的規則給 0 分（與「配息率 0%」是不同的命中規則）。
         if facts.dividend_annual and facts.ttm_eps:
             facts.ttm_payout_ratio = facts.dividend_annual[-1] / facts.ttm_eps * 100 if facts.ttm_eps > 0 else 0.0
         else:
-            facts.missing_reasons["payout_ratio"] = "缺少股利或 TTM EPS"
+            facts.missing_reasons["payout_ratio"] = "缺少股利或 TTM EPS（TTM EPS=0 時比率無定義）"
 
     def _fill_governance(self, facts: CompanyFacts) -> None:
         hold, pledge = self.director_provider.get(facts.stock_id)
