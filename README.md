@@ -105,6 +105,16 @@ PDF 由本機的 Edge 或 Chrome 以 headless 模式列印，找不到時會保�
 瀏覽器裝在非預設位置時設定 `TWFACTOR_BROWSER` 指向執行檔。母體約 630 檔時，
 證交所「權息」明細需逐筆查詢（每筆間隔 2 秒避免被暫時封鎖），第一次執行約需 5～10 分鐘，之後走快取。
 
+**全體台股 EPS 因子評分**（只算 §8.1 EPS 一項，母體為全市場普通股）：
+
+```bash
+PYTHONPATH=src python scripts/eps_score.py --as-of 2026-09-18
+```
+
+輸出 `output/eps_score_<基準日>.csv`（每檔五年 EPS〔最新股本基準〕、TTM EPS、五年年複合成長、
+EPS 分數與命中規則），終端機印出分數分布、各產業平均分與「滿分且成長最快」的領先者。
+評分直接呼叫 `scoring.factors.score_eps`，與十項因子評分同一套規則與門檻。
+
 ### 常用選項
 
 | 選項 | 用途 |
