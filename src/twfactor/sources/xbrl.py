@@ -81,6 +81,8 @@ def parse_facts(html: str) -> Facts:
 class XbrlArchive:
     """單一季度的整批 zip。只在需要時才解壓並解析個別公司的檔案。"""
 
+    kind = "zip"
+
     def __init__(self, path: str | Path):
         self.path = Path(path)
         m = re.search(r"(\d{4})Q(\d)", self.path.name)
@@ -127,6 +129,92 @@ class XbrlArchive:
             html = self._zip.read(self._index[stock_id][1]).decode("utf-8", "ignore")
             self._cache[stock_id] = parse_facts(html)
         return self._cache[stock_id]
+
+
+# -- 精簡事實檔 -----------------------------------------------------------------
+# 整批 zip 每檔 100 MB 以上，超過 GitHub 單檔 100 MB 上限，也不適合放進 repo。
+# 精簡事實檔只保留評分用到的元素（config/xbrl_fields.yaml 列出的 tags），
+# 全部公司 × 全部季檔壓成一個 gzip CSV，commit 進 repo 後，clone 下來不必下載 zip 就能評分。
+SNAPSHOT_COLUMNS = ["archive", "stock_id", "taxonomy", "tag", "context", "value"]
+
+
+def _fmt_value(v: float) -> str:
+    return str(int(v)) if float(v).is_integer() else repr(v)
+
+
+def build_snapshot(archives: list["XbrlArchive"], tags: set[str], out: str | Path,
+                   log: Callable[[str], None] = print) -> int:
+    """把各季檔中所有公司、指定元素的主報表事實寫成 gzip CSV，回傳列數。"""
+    import csv
+    import gzip
+
+    out = Path(out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    rows = 0
+    with gzip.open(out, "wt", encoding="utf-8", newline="", compresslevel=9) as fh:
+        w = csv.writer(fh)
+        w.writerow(SNAPSHOT_COLUMNS)
+        for a in archives:
+            for sid in sorted(a._index):
+                facts = a.facts(sid) or {}
+                for tag in sorted(t for t in facts if t in tags):
+                    for ctx, v in sorted(facts[tag].items()):
+                        w.writerow([a.label, sid, a.taxonomy(sid), tag, ctx, _fmt_value(v)])
+                        rows += 1
+                a._cache.pop(sid, None)            # 逐家釋放，整季解析完不必全部留在記憶體
+            log(f"      {a.label}：{len(a)} 家")
+    return rows
+
+
+class SnapshotArchive:
+    """與 XbrlArchive 相同的讀取介面，資料來自精簡事實檔的某一季。"""
+
+    kind = "snapshot"
+
+    def __init__(self, label: str, companies: dict[str, tuple[str, Facts]]):
+        m = re.fullmatch(r"(\d{4})Q(\d)", label)
+        if not m:
+            raise XbrlError(f"精簡事實檔的季別格式不正確：{label}")
+        self.year, self.quarter = int(m.group(1)), int(m.group(2))
+        self._companies = companies
+
+    @property
+    def label(self) -> str:
+        return f"{self.year}Q{self.quarter}"
+
+    def __contains__(self, stock_id: str) -> bool:
+        return stock_id in self._companies
+
+    def __len__(self) -> int:
+        return len(self._companies)
+
+    def filename(self, stock_id: str) -> str | None:
+        return f"snapshot:{self.label}:{stock_id}" if stock_id in self._companies else None
+
+    def taxonomy(self, stock_id: str) -> str | None:
+        hit = self._companies.get(stock_id)
+        return hit[0] if hit else None
+
+    def facts(self, stock_id: str) -> Facts | None:
+        hit = self._companies.get(stock_id)
+        return hit[1] if hit else None
+
+
+def load_snapshot(path: str | Path) -> dict[str, SnapshotArchive]:
+    """精簡事實檔 → {季別: SnapshotArchive}。"""
+    import csv
+    import gzip
+
+    data: dict[str, dict[str, tuple[str, Facts]]] = {}
+    with gzip.open(path, "rt", encoding="utf-8", newline="") as fh:
+        reader = csv.reader(fh)
+        header = next(reader, None)
+        if header != SNAPSHOT_COLUMNS:
+            raise XbrlError(f"{Path(path).name} 欄位不符，預期 {SNAPSHOT_COLUMNS}")
+        for label, sid, tax, tag, ctx, value in reader:
+            entry = data.setdefault(label, {}).setdefault(sid, (tax, {}))
+            entry[1].setdefault(tag, {})[ctx] = float(value)
+    return {label: SnapshotArchive(label, companies) for label, companies in data.items()}
 
 
 def download_archive(year: int, quarter: int, dest_dir: str | Path,

@@ -13,8 +13,10 @@
 from __future__ import annotations
 
 import argparse
+import math
 import sys
 from datetime import date, datetime
+from fractions import Fraction
 from pathlib import Path
 
 from .export import cards_to_dataframe, write_excel, write_snapshot
@@ -30,7 +32,32 @@ def _build_source(args, field_map, years):
     from .sources.opendata import OpenDataSource
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
     return OpenDataSource(field_map, years=years, as_of=as_of, cache_dir=args.cache_dir,
-                          allow_download=args.download_xbrl)
+                          allow_download=args.download_xbrl, snapshot_path=args.xbrl_snapshot)
+
+
+DEFAULT_SNAPSHOT = Path(__file__).resolve().parents[2] / "data" / "xbrl_facts.csv.gz"
+
+
+def cmd_build_snapshot(args) -> int:
+    """把快取中的 XBRL 整批 zip 抽成可放進 repo 的精簡事實檔（只含 xbrl_fields.yaml 列出的元素）。"""
+    from .sources.opendata import OpenDataSource
+    from .sources.xbrl import XbrlError, build_snapshot
+
+    field_map = load_field_map(args.fields)
+    params = load_params(args.params)
+    as_of = date.fromisoformat(args.as_of) if args.as_of else None
+    src = OpenDataSource(field_map, years=params["periods"]["annual_years"], as_of=as_of,
+                         cache_dir=args.cache_dir, allow_download=args.download_xbrl)
+    try:
+        archives = src.load_archives()           # 不帶 snapshot_path：一定要從原始 zip 抽
+    except XbrlError as exc:
+        print(f"✖ {exc}", file=sys.stderr)
+        return 2
+    tags = {t for spec in field_map["fields"].values() for t in spec["tags"]}
+    print(f"抽取 {len(tags)} 個元素 × {len(archives)} 個季檔 …", file=sys.stderr)
+    rows = build_snapshot(archives, tags, args.out, log=lambda m: print(m, file=sys.stderr))
+    print(f"已寫入 {args.out}：{rows:,} 列、{Path(args.out).stat().st_size / 1048576:.1f} MB", file=sys.stderr)
+    return 0
 
 
 def _candidates(args) -> list[str] | None:
@@ -86,13 +113,19 @@ def cmd_run(args) -> int:
 
     source = _build_source(args, field_map, years)
     candidates = _candidates(args)
+    fraction = _parse_fraction(args.top_fraction) if args.top_fraction else None
     scope = f"候選母體 {len(candidates)} 檔" if candidates else "全市場"
-    print(f"[1/4] 取得母體：{source.name}，{scope} 取市值前 {args.top} 檔 …", file=sys.stderr)
-    if args.source == "fixture":
-        companies = source.top_by_market_cap(args.top)
-    else:
-        companies = source.top_by_market_cap(args.top, candidates=candidates)
-    print(f"      取得 {len(companies)} 檔", file=sys.stderr)
+    want = f"市值前 {args.top_fraction}" if fraction else f"市值前 {args.top} 檔"
+    print(f"[1/4] 取得母體：{source.name}，{scope} 取{want} …", file=sys.stderr)
+    everyone = (source.top_by_market_cap(10**9) if args.source == "fixture"
+                else source.top_by_market_cap(10**9, candidates=candidates))
+    n = math.ceil(len(everyone) * fraction) if fraction else args.top
+    companies = everyone[:n]
+    scope_label = (f"市值前{FRACTION_NAMES.get(fraction, f' {float(fraction):.0%}')}" if fraction
+                   else f"市值前 {len(companies)} 檔")
+    print(f"      可排名普通股 {len(everyone)} 檔，取 {len(companies)} 檔"
+          + (f"（市值門檻 {companies[-1]['market_cap'] / 1e8:,.0f} 億）"
+             if companies and companies[-1].get("market_cap") else ""), file=sys.stderr)
     if companies and companies[0].get("price_date"):
         print(f"      市值基準：{companies[0]['price_date']} 收盤價 × 已發行普通股數", file=sys.stderr)
     if candidates:
@@ -121,9 +154,55 @@ def cmd_run(args) -> int:
     xlsx_path = write_excel(cards, facts_map, outdir / f"scores_{stamp}.xlsx")
     snap_path = write_snapshot(cards, facts_map, outdir / f"snapshot_{stamp}.json")
 
-    _print_summary(cards, params)
-    print(f"\n輸出：\n  {csv_path}\n  {xlsx_path}\n  {snap_path}", file=sys.stderr)
+    extra = (_write_pdf(source, cards, facts_map, companies, params, outdir, stamp,
+                        scope_label=scope_label, universe_size=len(everyone), focus=args.focus)
+             if args.pdf else "")
+
+    _print_summary(cards, params, limit=args.focus if len(cards) > args.focus * 2 else None)
+    print(f"\n輸出：\n  {csv_path}\n  {xlsx_path}\n  {snap_path}{extra}", file=sys.stderr)
     return 0
+
+
+FRACTION_NAMES = {Fraction(1, 2): "二分之一", Fraction(1, 3): "三分之一", Fraction(1, 4): "四分之一",
+                  Fraction(1, 5): "五分之一", Fraction(1, 10): "十分之一"}
+
+
+def _parse_fraction(text: str) -> Fraction:
+    """「1/3」或「0.25」→ Fraction；必須介於 0 與 1 之間。"""
+    try:
+        f = Fraction(text.strip()).limit_denominator(1000)
+    except (ValueError, ZeroDivisionError) as exc:
+        raise SystemExit(f"--top-fraction 需為 1/3 或 0.25 這類比例：{text!r}") from exc
+    if not 0 < f <= 1:
+        raise SystemExit(f"--top-fraction 需介於 0 與 1 之間：{text!r}")
+    return f
+
+
+def _write_pdf(source, cards, facts_map, companies, params, outdir: Path, stamp: str, *,
+               scope_label: str, universe_size: int, focus: int) -> str:
+    """評分結果的列印版報告。找不到瀏覽器時保留 HTML，不讓整次評分失敗。"""
+    import subprocess
+
+    from .report import ReportError, html_to_pdf, render_html
+
+    years = (getattr(source, "target_years", None)
+             or next((f.fiscal_years for f in facts_map.values() if f.fiscal_years), None)
+             or [date.today().year - 1])
+    interim = source.latest_interim() if hasattr(source, "latest_interim") else None
+    ttm_label = f"{interim[0]}Q{interim[1]}" if interim else f"FY{years[-1]}"
+    archives = [a.label for a in (getattr(source, "_archives", None) or [])]
+    html_path = outdir / f"report_{stamp}.html"
+    html_path.write_text(render_html(
+        cards, facts_map, companies, params, years=years, ttm_label=ttm_label,
+        price_date=companies[0].get("price_date", "") if companies else "", archives=archives,
+        scope_label=scope_label, universe_size=universe_size, focus=focus),
+        encoding="utf-8")
+    try:
+        pdf_path = html_to_pdf(html_path, outdir / f"report_{stamp}.pdf")
+    except (ReportError, subprocess.SubprocessError, OSError) as exc:
+        print(f"      ⚠ PDF 未產生：{exc}（HTML 已保留，可用瀏覽器開啟後列印）", file=sys.stderr)
+        return f"\n  {html_path}"
+    return f"\n  {pdf_path}"
 
 
 def _w(text: str) -> int:
@@ -137,7 +216,8 @@ def _pad(text: str, width: int, align: str = "left") -> str:
     return text + " " * gap if align == "left" else " " * gap + text
 
 
-def _print_summary(cards, params) -> None:
+def _print_summary(cards, params, limit: int | None = None) -> None:
+    """limit：母體很大時只印得分前 limit 名，完整排名看 CSV／Excel。"""
     keys = list(FACTOR_LABELS.keys())
     short = {"eps": "EPS", "free_cash_flow": "FCF", "dividend": "股利",
              "payout_ratio": "配息率", "net_margin": "淨利率", "lt_debt_equity": "負債比",
@@ -168,7 +248,9 @@ def _print_summary(cards, params) -> None:
     financial = sorted([c for c in cards if c.rank_pool == "financial" and c.rank], key=lambda c: c.rank)
     na = [c for c in cards if c.raw_total is None]
 
-    table(general, params["general_sector"]["max_score"], "一般產業排名")
+    shown = [c for c in general if c.rank <= limit] if limit else general
+    table(shown, params["general_sector"]["max_score"],
+          f"一般產業得分前 {limit} 名（共 {len(general)} 檔，完整排名見 CSV）" if limit else "一般產業排名")
     table(financial, params["financial_sector"]["max_score"], "金融業排名（不與一般產業混排）")
 
     thr = params["general_sector"]["screening_threshold"]
@@ -204,6 +286,9 @@ def main(argv: list[str] | None = None) -> int:
 
     r = sub.add_parser("run", help="取得資料、評分、排名並匯出")
     r.add_argument("--top", type=int, default=50, help="取市值前 N 檔（預設 50）")
+    r.add_argument("--top-fraction", default=None,
+                   help="改以比例取母體，例如 1/3 表示可排名普通股中市值前三分之一（優先於 --top）")
+    r.add_argument("--focus", type=int, default=50, help="PDF 報告重點分析的得分前 N 名（預設 50）")
     r.add_argument("--source", choices=["opendata", "fixture"], default="opendata")
     r.add_argument("--as-of", default=None, help="資料基準日 YYYY-MM-DD，用於推定最新完整年度與 TTM 季別")
     r.add_argument("--stocks", default=None, help="限定候選母體代碼，逗號分隔（預設全市場）")
@@ -212,12 +297,23 @@ def main(argv: list[str] | None = None) -> int:
                    help="XBRL 整批檔與公開資料快取目錄（預設 .xbrlcache）")
     r.add_argument("--download-xbrl", action="store_true",
                    help="缺少的 XBRL 整批檔自動從公開資訊觀測站下載（單檔約 100 MB 以上）")
+    r.add_argument("--xbrl-snapshot", default=str(DEFAULT_SNAPSHOT),
+                   help="快取沒有 zip 的季別改讀這個精簡事實檔（預設 data/xbrl_facts.csv.gz）")
     r.add_argument("--director-holdings", default=None,
                    help="MOPS 董監持股餘額明細匯出檔（CSV），供 PRD §8.10 評分")
     r.add_argument("--director-openapi", action="store_true",
                    help="直接取 TWSE／TPEx 公開 open data 的董監持股（免金鑰）")
     r.add_argument("--outdir", default="output")
+    r.add_argument("--pdf", action="store_true",
+                   help="另產生 A4 橫式 PDF 報告（需本機有 Edge 或 Chrome，或設定 TWFACTOR_BROWSER）")
     r.set_defaults(func=cmd_run)
+
+    b = sub.add_parser("build-snapshot", help="從快取的 XBRL 整批 zip 產生 repo 用的精簡事實檔")
+    b.add_argument("--cache-dir", default=".xbrlcache")
+    b.add_argument("--as-of", default=None, help="資料基準日 YYYY-MM-DD，決定要哪幾季")
+    b.add_argument("--download-xbrl", action="store_true", help="缺少的整批檔先下載")
+    b.add_argument("--out", default=str(DEFAULT_SNAPSHOT))
+    b.set_defaults(func=cmd_build_snapshot)
 
     args = ap.parse_args(argv)
     return args.func(args)

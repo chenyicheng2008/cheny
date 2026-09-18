@@ -30,7 +30,8 @@ import requests
 
 from ..models import CompanyFacts, Provenance
 from .base import NullDirectorHoldingProvider
-from .xbrl import Facts, XbrlArchive, XbrlMissingError, archive_name, download_archive
+from .xbrl import (Facts, SnapshotArchive, XbrlArchive, XbrlMissingError, archive_name,
+                   download_archive, load_snapshot)
 
 TWSE_INFO_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
 TWSE_PRICE_URL = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
@@ -160,7 +161,10 @@ class OpenDataSource:
     def __init__(self, field_map: dict, years: int = 5, as_of: date | None = None,
                  director_provider=None, cache_dir: str | Path = ".xbrlcache",
                  allow_download: bool = False, session: requests.Session | None = None,
-                 request_pause: float = 1.0, log: Callable[[str], None] | None = None):
+                 request_pause: float = 2.0, log: Callable[[str], None] | None = None,
+                 snapshot_path: str | Path | None = None):
+        # 證交所對短時間大量請求會暫時封鎖來源 IP；除權息明細逐筆查詢時尤其要放慢
+        self.snapshot_path = Path(snapshot_path) if snapshot_path else None
         self.fm = field_map
         self.years = years
         self.as_of = as_of or date.today()
@@ -206,18 +210,27 @@ class OpenDataSource:
         return sorted(need)
 
     # -- XBRL ---------------------------------------------------------------
-    def load_archives(self) -> list[XbrlArchive]:
+    def load_archives(self) -> list[XbrlArchive | SnapshotArchive]:
+        """每一季優先用快取中的 zip；沒有 zip 就改用 repo 內的精簡事實檔；兩者都沒有才下載。"""
         if self._archives is None:
             need = self.required_archives()
             missing = [(y, q) for y, q in need if not (self.cache_dir / archive_name(y, q)).exists()]
-            if missing and not self.allow_download:
-                names = "、".join(archive_name(y, q) for y, q in missing)
+            snapshot: dict[str, SnapshotArchive] = {}
+            if missing and self.snapshot_path and self.snapshot_path.exists():
+                snapshot = load_snapshot(self.snapshot_path)
+            still_missing = [(y, q) for y, q in missing if f"{y}Q{q}" not in snapshot]
+            if still_missing and not self.allow_download:
+                names = "、".join(archive_name(y, q) for y, q in still_missing)
+                where = f"精簡事實檔 {self.snapshot_path} 也沒有這幾季。" if self.snapshot_path else ""
                 raise XbrlMissingError(
-                    f"缺少 XBRL 整批檔：{names}。加上 --download-xbrl 自動下載"
+                    f"缺少 XBRL 整批檔：{names}。{where}加上 --download-xbrl 自動下載"
                     f"（公開資訊觀測站 t203sb02，單檔約 100 MB 以上），或手動下載後放到 {self.cache_dir}/")
-            for y, q in missing:
+            for y, q in still_missing:
                 download_archive(y, q, self.cache_dir, session=self.session, log=self.log)
-            self._archives = [XbrlArchive(self.cache_dir / archive_name(y, q)) for y, q in need]
+            self._archives = [
+                XbrlArchive(self.cache_dir / archive_name(y, q))
+                if (self.cache_dir / archive_name(y, q)).exists() else snapshot[f"{y}Q{q}"]
+                for y, q in need]
         return self._archives
 
     def company_facts(self, stock_id: str) -> tuple[Facts, list[str], Facts]:
@@ -367,7 +380,8 @@ class OpenDataSource:
         years = self.target_years
         archives = self.load_archives()
         if archives:
-            self.log("      XBRL 整批檔：" + "、".join(f"{a.label}（{len(a)} 家）" for a in archives))
+            self.log("      XBRL：" + "、".join(
+                f"{a.label}（{len(a)} 家{'，精簡事實檔' if a.kind == 'snapshot' else ''}）" for a in archives))
         dividends = self.dividend_history([c["stock_id"] for c in companies])
         fin_codes = {str(c) for c in self.fm.get("financial_industry_codes", [])}
         out = []

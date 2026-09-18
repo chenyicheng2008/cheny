@@ -90,6 +90,21 @@ PYTHONPATH=src python -m twfactor run --top 3 --stocks 2330,2454,2891 --director
 `--stocks`／`--stocks-file` 會把排名限定在指定清單內（執行時會印出警告）。
 不指定時就是全市場排名。
 
+**以比例取母體並產生 PDF 報告**：
+
+```bash
+PYTHONPATH=src python -m twfactor run --top-fraction 1/3 --focus 50 --director-openapi --pdf
+```
+
+`--top-fraction 1/3` 取可排名普通股中市值前三分之一（約 630 檔）；`--pdf` 另產生
+`output/report_*.pdf`（A4 橫式），內容依序為摘要與總分分布、**得分定義**（門檻取自
+`scoring_params.yaml`）、得分前 `--focus` 名排名與關鍵數字、前 N 名的產業與市值分層組成、
+金融業排名、全體排名附錄、資料缺漏與資料來源。
+
+PDF 由本機的 Edge 或 Chrome 以 headless 模式列印，找不到時會保留 `report_*.html` 並印出提示；
+瀏覽器裝在非預設位置時設定 `TWFACTOR_BROWSER` 指向執行檔。母體約 630 檔時，
+證交所「權息」明細需逐筆查詢（每筆間隔 2 秒避免被暫時封鎖），第一次執行約需 5～10 分鐘，之後走快取。
+
 ### 常用選項
 
 | 選項 | 用途 |
@@ -100,6 +115,9 @@ PYTHONPATH=src python -m twfactor run --top 3 --stocks 2330,2454,2891 --director
 | `--cache-dir <dir>` | XBRL 整批檔與公開資料快取，預設 `.xbrlcache` |
 | `--as-of 2026-09-15` | 資料基準日，用於推定最新完整年度與 TTM 季別（避免前視偏誤） |
 | `--top N` | 取前 N 檔 |
+| `--top-fraction 1/3` | 改以比例取市值前段（優先於 `--top`） |
+| `--pdf` | 另產生 A4 橫式 PDF 報告（需 Edge 或 Chrome，或設定 `TWFACTOR_BROWSER`） |
+| `--focus N` | PDF 重點分析的得分前 N 名，預設 50；母體很大時終端機也只印前 N 名 |
 | `--stocks` / `--stocks-file` | 限定候選母體 |
 | `--outdir <dir>` | 輸出目錄，預設 `output/` |
 | `--params` / `--fields` | 改用其他參數檔或科目對照檔 |
@@ -197,6 +215,25 @@ PYTHONPATH=src python -m twfactor run --top 3 --stocks 2330,2454,2891 --director
 
 ⚠ 2330 同時列示 `LongtermBorrowings` 與 `NoncurrentPortionOfNoncurrentLoansReceived`，兩者同值，
 不可重複相加，對照表只取前者。
+
+### 精簡事實檔（repo 內，免下載整批檔）
+
+整批 zip 每檔 100 MB 以上，超過 GitHub 單檔上限，無法放進 repo。因此 repo 附一份
+`data/xbrl_facts.csv.gz`：只保留上表（`config/xbrl_fields.yaml`）用到的元素，
+涵蓋各季檔的**全部公司**，欄位為 `archive, stock_id, taxonomy, tag, context, value`（金額單位：元）。
+
+`run` 時每一季優先用 `.xbrlcache/` 裡的 zip；沒有 zip 的季別改讀精簡事實檔；兩者都沒有才需要
+`--download-xbrl`。所以 clone 下來即可評分，只剩母體、股價、股利、董監持股要連線取得。
+執行畫面會標出哪幾季來自精簡事實檔。
+
+更新方式（在有 zip 的電腦上）：
+
+```bash
+PYTHONPATH=src python -m twfactor build-snapshot --cache-dir .xbrlcache --as-of 2026-09-15
+```
+
+⚠ 在 `xbrl_fields.yaml` 新增元素後要重建精簡事實檔，否則新元素在沒有 zip 的環境一律解析不到（標 N/A）。
+⚠ 季別會隨時間前進（例如 11/14 後 TTM 改用 Q3 檔），精簡事實檔沒有該季時，程式會要求下載。
 
 ### 現金股利
 
