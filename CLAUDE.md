@@ -70,6 +70,7 @@ config/universe_candidates.txt  免費層級用的候選母體（非全市場掃
 src/twfactor/scoring/           十項因子純函式、N/A 處理、排名
 src/twfactor/sources/           FinMind 取數、董監持股 provider
 scripts/eps_score.py            EPS 因子候選公式，吃本機 CSV，不連網
+.claude/skills/rescore/         重跑評分流程的 skill（含兩次執行的比對腳本）
 docs/                           決策紀錄與改版提案（理由與實證）
 poc/                            PoC 實測結果（schema 探測、前 50 檔評分）
 output/                         執行產出，已 gitignore
