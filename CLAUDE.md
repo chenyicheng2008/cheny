@@ -43,11 +43,20 @@ Windows PowerShell 需改用 `$env:PYTHONPATH="src"` 並設 `$env:PYTHONUTF8=1`
 - **證交所對機房 IP 封鎖**（`openapi.twse.com.tw`、`mops.twse.com.tw`）。
   這是 IP 政策不是權限問題，從一般網路環境執行即可；不得以輪換 IP 或代理規避。
 
+## 延伸文件（需要理由或細節時再讀，不必預載）
+
+- `docs/decisions.md` —— 決策紀錄。PRD 未規範或實作中另行判斷的八項事項，
+  每則含背景、實證數據與結論。**要改動既有行為前先讀這份**，多數「看起來很怪」
+  的作法背後都有實測依據。
+- `docs/eps-factor-redesign.md` —— EPS 因子改版提案的完整分析：現行規則的三個
+  結構性問題、為何標準差／CV 方案不可行、候選公式的推導與穩健性實測。
+
 ## 待需求方決定（未定案前不要自行實作）
 
 - **EPS 因子改版**：`scripts/eps_score.py` 是候選公式
   （`Score = 2 × G(g) × Q(R²) × P(D)`，對 ln EPS 迴歸），尚未取代 `factors.py`
   的現行明線規則。未決兩點：金融業是否用較低的成長門檻、分數採連續或分箱。
+  完整分析見 `docs/eps-factor-redesign.md`。
 - **XBRL 來源接入**：使用者本機有 XBRL 原始資料，待提供樣本後撰寫萃取器。
   台股 XBRL 的 EPS 須注意元素名稱隨分類標準版本而異、同檔多 context 要挑對期間、
   金融／金控／保險業元素集不同 —— 未見樣本前不要臆測欄位。
@@ -61,6 +70,7 @@ config/universe_candidates.txt  免費層級用的候選母體（非全市場掃
 src/twfactor/scoring/           十項因子純函式、N/A 處理、排名
 src/twfactor/sources/           FinMind 取數、董監持股 provider
 scripts/eps_score.py            EPS 因子候選公式，吃本機 CSV，不連網
+docs/                           決策紀錄與改版提案（理由與實證）
 poc/                            PoC 實測結果（schema 探測、前 50 檔評分）
 output/                         執行產出，已 gitignore
 ```
