@@ -32,9 +32,10 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-ID_COLS = ("公司代號", "股票代號", "證券代號", "代碼", "股票代碼", "stock_id", "code", "ticker")
-NAME_COLS = ("公司名稱", "公司簡稱", "名稱", "股票名稱", "stock_name", "name")
-YEAR_COLS = ("年度", "會計年度", "年份", "資料年度", "year", "fiscal_year")
+ID_COLS = ("公司代號", "股票代號", "證券代號", "代碼", "股票代碼",
+           "SecuritiesCompanyCode", "stock_id", "code", "ticker")
+NAME_COLS = ("公司名稱", "公司簡稱", "名稱", "股票名稱", "CompanyName", "stock_name", "name")
+YEAR_COLS = ("年度", "會計年度", "年份", "資料年度", "Year", "year", "fiscal_year")
 EPS_COLS = ("基本每股盈餘", "每股盈餘", "基本每股盈餘（元）", "EPS", "eps", "基本每股盈餘(元)")
 MARKET_COLS = ("市場別", "市場", "market")
 INDUSTRY_COLS = ("產業別", "產業", "industry_category", "industry")
@@ -50,6 +51,15 @@ def _find(header, names):
         if _norm(n) in table:
             return table[_norm(n)]
     return None
+
+
+def _year(v):
+    """年度正規化。MOPS／XBRL 資料集常以民國年表示（Year=115），西元四位數則原樣。"""
+    n = _num(v)
+    if n is None:
+        return None
+    n = int(n)
+    return n + 1911 if n < 1000 else n
 
 
 def _num(v):
@@ -96,9 +106,9 @@ def read_eps(path: Path):
             "industry": (r.get(c_industry) or "").strip() if c_industry else "",
         })
         if c_year and c_eps:                                     # 長表
-            y, v = _num(r[c_year]), _num(r[c_eps])
+            y, v = _year(r[c_year]), _num(r[c_eps])
             if y and v is not None:
-                data[sid][int(y)] = v
+                data[sid][y] = v
         else:                                                    # 寬表
             for h, y in year_cols:
                 v = _num(r[h])
