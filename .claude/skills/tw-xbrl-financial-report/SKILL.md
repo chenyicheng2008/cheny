@@ -1,0 +1,110 @@
+---
+name: tw-xbrl-financial-report
+description: 以 repo 內 data/xbrl_facts.csv.gz（MOPS XBRL 精簡事實檔，全部台股公司 2021Q4 起各季）為主、個別公司完整 inline XBRL 為輔，產出單一個股的「XBRL 財報與現金流量分析」PDF 報告：五年損益、單季／半年、TTM、營業現金流／淨利、自由現金流、資本支出強度、營運資金與週轉天數、股利反推、淨現金、大陸投資比重、評價，以及依數字自動產生的重點判讀，再加上質化分析評論。只要使用者提到某檔台股（4 碼代號或公司名）要「XBRL 財報分析」「現金流量分析」「自由現金流」「財報 PDF／分析報告 PDF」「盈餘品質」「資本支出／擴產對現金流的影響」「股利能否維持」，即使沒說用這個 skill 也要使用。只做客觀財務研判，不給投資建議。
+---
+
+# 台股 XBRL 財報與現金流量分析報告
+
+## 產出
+
+`scripts/xbrl_financial_report.py` 產生 `<outdir>/<代號>_financial_report_<日期>.{html,pdf,json}`：
+
+| 區塊 | 內容 |
+|---|---|
+| KPI | TTM EPS、每股自由現金流、營業現金流／淨利、ROE、營益率、每股淨現金、負債比、本益比 |
+| 重點判讀 | 規則自動產生（正面／留意／風險），只陳述數字推得出的事實 |
+| 分析評論 | `--notes` 的 Markdown（質化：產品、客戶、題材、資金需求、風險、追蹤清單） |
+| 一、損益表 | 五年＋去年同期＋最新期中＋TTM：營收、毛利率、費用、營益率、業外、匯兌、稅率、淨利、EPS、ROE |
+| 二、單季營運 | 由累計相減的單季；缺 Q3 季檔時以「H2＝全年－H1」呈現 |
+| 三、現金流量 | 營業現金流拆解（折舊、營運資金、存貨／應收／應付、所得稅）、資本支出強度、自由現金流、股利、匯率影響 |
+| 四、資產負債 | 現金、定存、借款、淨現金、負債比、流動比率、每股淨值、DSO／DIO／DPO、大陸投資／權益 |
+| 評價 | 有 `--price` 時：市值、EV、本益比、股價淨值比、自由現金流殖利率、EV／營業利益 |
+
+## 流程
+
+### 1. 確認資料
+
+```bash
+ls data/xbrl_facts.csv.gz || { git fetch origin claude/pdf-report && git checkout origin/claude/pdf-report -- data/xbrl_facts.csv.gz; }
+```
+
+精簡事實檔只含評分用的 13 個科目（營收、營業利益、淨利、EPS、稅前、所得稅、利息、權益、
+短期借款、長期借款、營業現金流、資本支出），**沒有毛利、營運資金、股利、現金、存貨**。
+只用精簡檔也能出報告，缺的欄位顯示「—」，不推估。
+
+### 2. 取得明細（選用，強烈建議）
+
+先看 `reports/<代號>/<代號>_detail_facts.json` 是否已存在；有就直接用。
+
+沒有時，從公開資訊觀測站單一公司 inline XBRL 下載最新季報與去年同季（各含前一年底與去年同期比較數）：
+
+```
+https://mopsov.twse.com.tw/server-java/t164sb01?step=1&CO_ID=<代號>&SYEAR=<西元年>&SSEASON=<季>&REPORT_ID=C
+```
+
+- **一次一個請求，間隔 ≥30 秒。** 若回應是約 800 bytes、HTTP 307 的 HTML，代表被證交所來源 IP 過濾：
+  **立即停止**，不要換 IP、代理或偽裝標頭（README 明定不得規避）。改請使用者在一般網路環境以瀏覽器
+  開啟上列網址另存 .html，放進 repo 後再用。
+- 使用者若中斷或拒絕下載請求，不要再試，改用精簡檔＋已有檔案。
+- 解析並保存（可 commit，日後免下載）：
+
+```bash
+python scripts/xbrl_financial_report.py <代號> --detail a.html --detail b.html \
+  --detail-label "MOPS t164sb01 <代號> 2026Q2 合併財報" --detail-label "... 2025Q2 ..." \
+  --save-detail reports/<代號>/<代號>_detail_facts.json --no-pdf
+```
+
+### 3. 先看數字，再寫評論
+
+```bash
+python scripts/xbrl_financial_report.py <代號> --name <公司名> --detail reports/<代號>/<代號>_detail_facts.json --no-pdf
+```
+
+讀終端機的自動判讀與 `.json` 指標檔，再寫 `reports/<代號>/notes.md`。評論架構（`##`／`###` 標題、`-` 清單、`|` 表格、`**粗體**`）：
+
+1. **結論**（2–3 句：品質、成長、現金流階段、評價位置）
+2. **公司與產品**（產品比重、客戶集中、生產基地、上市櫃狀態）——質化資料用 WebSearch／櫃買中心 OpenAPI，
+   報告末行註明來源
+3. **獲利結構**：營益率趨勢；**期中 EPS 年增減要拆成本業與業外**（匯兌、一次性）
+4. **現金流量分析**（本 skill 重點，見下節判讀要點）
+5. **資產負債**、**評價與風險**、**下季追蹤**
+
+### 4. 產生 PDF 並檢查
+
+```bash
+TWFACTOR_BROWSER=/opt/pw-browsers/chromium \
+python scripts/xbrl_financial_report.py <代號> --name <公司名> \
+  --detail reports/<代號>/<代號>_detail_facts.json --notes reports/<代號>/notes.md \
+  --price <股價> --price-date <YYYY-MM-DD> --outdir reports/<代號>
+pdftoppm -r 60 -png reports/<代號>/*.pdf /tmp/pg   # 逐頁看版面：表格溢出、圖表、分頁
+```
+
+- 雲端容器：Chromium 在 `/opt/pw-browsers/chromium`，以 root 執行時 `html_to_pdf` 會自動加 `--no-sandbox`；
+  中文字型用 WenQuanYi Zen Hei。Windows／macOS 會自動找 Edge／Chrome。
+- 興櫃股不在 OpenAPI 主板報價內，股價以 `--price` 手動帶入（櫃買 `tpex_esb_latest_statistics` 的 `LatestPrice`）。
+- 完成後以 SendUserFile 傳 PDF；使用者要求時 commit `reports/<代號>/`（PDF、notes.md、detail json）。
+
+## 現金流量判讀要點
+
+| 檢查 | 怎麼看 | 常見陷阱 |
+|---|---|---|
+| 盈餘品質 | 營業現金流／淨利 ≥1 為佳，<0.8 查應收與存貨 | 高比率若來自**存貨去化**（`d_inv` 占營業現金流 ≥20%）不可外推，存貨回補時會回落 |
+| 自由現金流 | 營業現金流＋資本支出（負值） | 擴產期資本支出／折舊 >2× 時自由現金流下滑是正常的，要估算資金缺口 |
+| 資金缺口 | 年資本支出計畫＋股利 vs. 營業現金流，對照淨現金與增資 | 現金若在大陸子公司（大陸投資／權益高、累計匯回為 0）可動用性打折 |
+| 股利反推 | 期中「發放股利」為 0 時：盈餘分配＝期初保留盈餘＋期中淨利－期末保留盈餘；其他應付款同幅增加即為應付股利 | 法定公積提列在保留盈餘內，不影響此算式；股利÷股數＝每股股利 |
+| 負債比突升 | 先查其他應付款（應付股利）、短期借款 | 宣告未付股利會暫時墊高負債比、壓低流動比率 |
+| 匯兌 | `fx_gain`／稅前 ≥8% 即標示 | 期中 EPS 衰退常是匯兌擺盪而非本業 |
+| 遞延所得稅 | 遞延所得稅負債降、本期所得稅負債升 | 可能是海外盈餘匯回稅負轉列當期，需附註確認，寫成「推測」 |
+
+## 方法規則
+
+- 年度值取 `From{Y}0101To{Y}1231`；TTM＝今年累計＋去年全年－去年同期累計；單季由累計相減；
+  只有半年報時 Q1＝H1－Q2、H2＝全年－H1。
+- 同一期間出現在多個季檔時以較新申報者為準（可能經追溯調整）。
+- 股數優先用股本 ÷ 面額 10 元，否則以淨利 ÷ EPS 推估（報告會註明）。
+- 解析不到一律「—」，不以推測值補齊；評論中自行推算的數字（例如股利反推）要寫明是推算。
+- 結尾固定「不構成投資建議」。
+
+## 範例
+
+`reports/7763/`：崇舜（興櫃），精簡檔 2023Q4–2026Q2＋2025Q2、2026Q2 完整 XBRL，含 notes.md 與 PDF。

@@ -245,6 +245,21 @@ PYTHONPATH=src python -m twfactor build-snapshot --cache-dir .xbrlcache --as-of 
 ⚠ 在 `xbrl_fields.yaml` 新增元素後要重建精簡事實檔，否則新元素在沒有 zip 的環境一律解析不到（標 N/A）。
 ⚠ 季別會隨時間前進（例如 11/14 後 TTM 改用 Q3 檔），精簡事實檔沒有該季時，程式會要求下載。
 
+### 個股財報與現金流量分析報告
+
+`scripts/xbrl_financial_report.py` 以精簡事實檔產生單一個股的 HTML／PDF／JSON 報告（五年損益、單季、TTM、
+營業現金流／淨利、自由現金流、資本支出強度、資產負債、評價與自動判讀）。精簡檔沒有的明細
+（毛利、營運資金、股利、現金、存貨）可用 `--detail` 帶入個別公司的完整 inline XBRL，質化評論用 `--notes`：
+
+```bash
+PYTHONPATH=src python scripts/xbrl_financial_report.py 7763 --name 崇舜 \
+  --detail reports/7763/7763_detail_facts.json --notes reports/7763/notes.md \
+  --price 178 --price-date 2026-10-02 --outdir reports/7763
+```
+
+完整流程與判讀要點見 Claude Code skill `.claude/skills/tw-xbrl-financial-report/SKILL.md`；
+範例報告在 `reports/7763/`（崇舜）、`reports/2360/`（致茂）。
+
 ### 現金股利
 
 | 市場 | 端點 | 備註 |

@@ -77,7 +77,9 @@ def html_to_pdf(html_path: str | Path, pdf_path: str | Path, browser: str | None
     pdf_path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="twfactor-browser-") as profile:
         # 獨立的使用者資料夾，避免與正在使用的瀏覽器視窗衝突
-        subprocess.run([browser, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
+        # 以 root 執行（容器／CI）時 Chromium 拒絕啟動沙箱，需加 --no-sandbox
+        sandbox = ["--no-sandbox"] if hasattr(os, "geteuid") and os.geteuid() == 0 else []
+        subprocess.run([browser, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", *sandbox,
                         f"--user-data-dir={profile}", "--virtual-time-budget=10000",
                         f"--print-to-pdf={pdf_path}", html_path.as_uri()],
                        check=True, timeout=timeout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

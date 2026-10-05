@@ -16,8 +16,9 @@ QUIET = {"log": lambda m: None}
 
 
 def _fact(tag, ctx, value, scale=0, sign=False):
+    sign_attr = ' sign="-"' if sign else ""      # f-string 內不可有反斜線（Python 3.11）
     return (f'<ix:nonFraction name="{tag}" contextRef="{ctx}" scale="{scale}"'
-            f'{" sign=\"-\"" if sign else ""}>{value}</ix:nonFraction>')
+            f'{sign_attr}>{value}</ix:nonFraction>')
 
 
 def _zip(directory, name, files):
