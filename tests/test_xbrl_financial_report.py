@@ -93,3 +93,31 @@ def test_markdown_subset():
     assert "<ul><li><b>重點</b> 一</li><li>二</li></ul>" in html
     assert "<th>a</th>" in html and "<td>2</td>" in html
     assert "<p>段落</p>" in html
+
+
+def test_valuation_decomposition_multiplies_back_to_pe():
+    f = make_facts()
+    f.merge({"ifrs-full:ProfitLossFromOperatingActivities": {"From20250101To20251231": 150 * M},
+             "ifrs-full:ProfitLossBeforeTax": {"From20250101To20251231": 250 * M},
+             "ifrs-full:IncomeTaxExpenseContinuingOperations": {"From20250101To20251231": 50 * M},
+             "ifrs-full:Equity": {"AsOf20251231": 1200 * M},
+             "ifrs-full:CashAndCashEquivalents": {"AsOf20251231": 500 * M},
+             "ifrs-full:ShorttermBorrowings": {"AsOf20251231": 100 * M}}, "extra")
+    r = xfr.analyse(f, "9999")
+    v = xfr.valuation(r, 100.0)
+    row = v["rows"][0]                          # 2025 年
+    assert v["mcap"] == pytest.approx(6000 * M)
+    assert v["ev"] == pytest.approx(6000 * M - (500 * M - 100 * M))     # 市值－淨現金
+    assert row["ev_ebit"] == pytest.approx(v["ev"] / (150 * M))
+    assert row["f_cash"] * row["ev_nopat"] * row["f_mix"] == pytest.approx(row["pe"])
+    assert row["nonop_share"] == pytest.approx(100 / 250)
+
+
+def test_ev_falls_back_to_debt_only_when_cash_missing():
+    f = make_facts()
+    for c in list(f.raw["ifrs-full:CashAndCashEquivalents"]):
+        del f.raw["ifrs-full:CashAndCashEquivalents"][c]
+    f.merge({"ifrs-full:Equity": {"AsOf20251231": 1200 * M},
+             "ifrs-full:ShorttermBorrowings": {"AsOf20251231": 100 * M}}, "extra")
+    v = xfr.valuation(xfr.analyse(f, "9999"), 100.0)
+    assert v["ev_upper"] and v["ev"] == pytest.approx(6100 * M)

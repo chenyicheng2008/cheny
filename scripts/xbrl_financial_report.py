@@ -319,6 +319,73 @@ def _avg(a: float | None, b: float | None) -> float | None:
     return None if a is None or b is None else (a + b) / 2
 
 
+# -- 評價：本益比 vs. 企業價值／營業利益 ---------------------------------------------
+def valuation(r: dict, price: float) -> dict:
+    """同一股價下，比較本益比（P/E）與企業價值倍數（EV/EBIT、EV/NOPAT），並拆解兩者差異。
+
+    P/E ＝（市值／EV）×（EV／稅後營業利益）×（稅後營業利益／淨利）
+          淨現金因子       本業倍數             盈餘組成因子（<1 表示淨利含業外收益）
+    """
+    fl, p, n = r["flows"], r["periods"], r["shares"]
+    bal = r["balances"][-1][1] if r["balances"] else {}
+    mcap = price * n if n else None
+    debt = None if bal.get("st_debt") is None else bal["st_debt"] + (bal.get("lt_debt") or 0)
+    if mcap is not None and bal.get("net_cash") is not None:
+        ev, ev_note, ev_upper = mcap - bal["net_cash"], "市值－淨現金", False
+    elif mcap is not None and debt is not None:
+        ev, ev_note, ev_upper = mcap + debt, "市值＋有息負債（資料無現金科目，未扣現金，EV 倍數為上限）", True
+    else:
+        ev, ev_note, ev_upper = None, "無資產負債資料", False
+    yrs = [str(y) for y in r["annual_years"]]
+    bases = [(f"{yrs[-1]} 年", fl[yrs[-1]], 1.0)]
+    if "TTM" in fl and p.ytd_year:
+        bases.append(("TTM", fl["TTM"], 1.0))
+        months = {"0331": 3, "0630": 6, "0930": 9}[p.ytd_md]
+        bases.append((f"{p.ytd_label} 年化", fl[p.ytd_label], 12 / months))
+    rows = []
+    for label, b, k in bases:
+        eps = None if b["eps"] is None else b["eps"] * k
+        oi = None if b["op_income"] is None else b["op_income"] * k
+        nopat = None if oi is None or b["tax_rate"] is None else oi * (1 - b["tax_rate"])
+        core_eps = div(nopat, n)
+        ni = None if eps is None or n is None else eps * n          # 歸屬母公司淨利（EPS × 股數）
+        rows.append({"basis": label, "eps": eps, "pe": div(price, eps), "core_eps": core_eps,
+                     "core_pe": div(price, core_eps), "ev_ebit": div(ev, oi), "ev_nopat": div(ev, nopat),
+                     "nonop_share": div(sub(b["pretax"], b["op_income"]), b["pretax"]),
+                     "f_cash": div(mcap, ev), "f_mix": div(nopat, ni)})
+    return {"mcap": mcap, "ev": ev, "ev_note": ev_note, "ev_upper": ev_upper, "debt": debt,
+            "net_cash": bal.get("net_cash"), "rows": rows}
+
+
+def valuation_reading(v: dict) -> list[str]:
+    """把 P/E 與 EV 倍數的落差翻成文字。"""
+    out = []
+    for row in v["rows"]:
+        if row["pe"] is None or row["ev_nopat"] is None or row["f_cash"] is None or row["f_mix"] is None:
+            continue
+        out.append(f"{row['basis']}：本益比 {row['pe']:.1f}× ＝ 淨現金因子 {row['f_cash']:.2f} × "
+                   f"EV／稅後營業利益 {row['ev_nopat']:.1f}× × 盈餘組成因子 {row['f_mix']:.2f}。")
+    ttm = next((x for x in v["rows"] if x["basis"] == "TTM"), v["rows"][0])
+    if ttm["f_mix"] is not None:
+        if ttm["f_mix"] < 0.85:
+            out.append(f"盈餘組成因子 {ttm['f_mix']:.2f} < 1：淨利含業外收益，帳面本益比低估了本業的真實倍數；"
+                       f"以稅後營業利益計，本業本益比約 {ttm['core_pe']:.1f}×，EV／營業利益 {ttm['ev_ebit']:.1f}×。")
+        elif ttm["f_mix"] > 1.15:
+            out.append(f"盈餘組成因子 {ttm['f_mix']:.2f} > 1：業外為損失（如匯損、利息），帳面本益比高估本業倍數。")
+        else:
+            out.append("盈餘組成因子接近 1：淨利幾乎全部來自本業，本益比與 EV 倍數可直接互相印證。")
+    if ttm["f_cash"] is not None:
+        if v["ev_upper"]:
+            out.append("資料缺現金餘額，EV 未扣現金；實際 EV 倍數會比表列略低。")
+        elif ttm["f_cash"] > 1.05:
+            out.append(f"淨現金占市值約 {1 - 1 / ttm['f_cash']:.0%}，扣除後本業被市場賦予的倍數比本益比更低。")
+        elif ttm["f_cash"] < 0.95:
+            out.append(f"公司有淨負債，EV 大於市值；只看本益比會低估負債風險。")
+    out.append("EV／營業利益是「本業、未稅、不受現金與負債影響」的倍數；"
+               "除以 (1－稅率) 換成 EV／稅後營業利益（EV／NOPAT）後，才和本益比同為稅後基準。")
+    return out
+
+
 # -- 自動判讀 -------------------------------------------------------------------
 def observations(r: dict, price: float | None) -> list[tuple[str, str]]:
     """(等級, 文字)；等級：good／watch／risk。只陳述數字推得出的事實。"""
@@ -575,6 +642,7 @@ tr.sec td { font-weight:700; background:none !important; padding-top:6px; color:
 .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .foot { color:var(--muted); font-size:8pt; margin-top:14px; border-top:1px solid var(--rule); padding-top:6px; }
 .pb { break-before:page; }
+.vr { margin:4px 0; padding-left:18px; } .vr li { margin:2px 0; }
 code { font-size:8.4pt; background:var(--zebra); padding:0 3px; border-radius:3px; }
 """
 
@@ -663,21 +731,32 @@ def render(r: dict, name: str, notes_html: str, obs: list[tuple[str, str]], pric
     val_html = ""
     if price:
         n = r["shares"]
-        mcap = price * n if n else None
-        ev = None if mcap is None or last_bal.get("net_cash") is None else mcap - last_bal["net_cash"]
+        v = valuation(r, price)
         last_y = fl[yrs[-1]]
         div_ps = div(-last_y["div_paid"], n) if last_y.get("div_paid") else None
-        vrows = [["市值", _m(mcap) + " 百萬元"], ["企業價值（市值－淨現金）", _m(ev) + " 百萬元"],
-                 ["本益比（TTM）", _times(div(price, ttm["eps"]))],
-                 [f"本益比（{yrs[-1]} 年）", _times(div(price, last_y["eps"]))],
+        vrows = [["市值", _m(v["mcap"]) + " 百萬元"],
+                 [f"企業價值 EV（{v['ev_note']}）", _m(v["ev"]) + " 百萬元"],
                  ["股價淨值比", _times(div(price, last_bal.get("bvps")))],
                  ["自由現金流殖利率（TTM）", _pct(div(ttm["fcf_ps"], price))],
-                 [f"自由現金流殖利率（{yrs[-1]} 年）", _pct(div(last_y["fcf_ps"], price))],
-                 ["企業價值／營業利益（TTM）", _times(div(ev, ttm["op_income"]))]]
+                 [f"自由現金流殖利率（{yrs[-1]} 年）", _pct(div(last_y["fcf_ps"], price))]]
         if div_ps:
             vrows.append([f"{yrs[-1]} 年實際發放股利／股價", _pct(div(div_ps, price))])
-        val_html = (f"<h2>評價（股價 {price:g} 元，{e(price_date or '')}）</h2>"
-                    + table(["數值"], [[e(a), b] for a, b in vrows], cls="narrow"))
+        cmp_rows = [[e(x["basis"]), _x(x["eps"]), _times(x["pe"]), _x(x["core_eps"]), _times(x["core_pe"]),
+                     _times(x["ev_ebit"]), _times(x["ev_nopat"]), _pct(x["nonop_share"], 0)] for x in v["rows"]]
+        dec_rows = [[e(x["basis"]), _times(x["pe"]), _x(x["f_cash"]), _times(x["ev_nopat"]), _x(x["f_mix"])]
+                    for x in v["rows"]]
+        reading = "".join(f"<li>{e(t)}</li>" for t in valuation_reading(v))
+        val_html = (f"<h2>五、評價（股價 {price:g} 元，{e(price_date or '')}）</h2>"
+                    + table(["數值"], [[e(a), b] for a, b in vrows])
+                    + "<h3>本益比 vs. 企業價值／營業利益</h3>"
+                    + '<p class="sub">本業 EPS＝營業利益×(1－有效稅率)÷股數；EV／EBIT＝EV÷營業利益（未稅）；'
+                      "EV／NOPAT＝EV÷稅後營業利益，與本益比同為稅後基準。期中年化＝年初至今×12÷月數。</p>"
+                    + table(["EPS（元）", "本益比", "本業 EPS（元）", "本業本益比", "EV／EBIT", "EV／NOPAT", "業外占稅前"],
+                            cmp_rows, first_col="基準")
+                    + "<h4>拆解：本益比＝淨現金因子 × EV／NOPAT × 盈餘組成因子</h4>"
+                    + table(["本益比", "淨現金因子（市值／EV）", "EV／NOPAT", "盈餘組成因子（NOPAT／淨利）"],
+                            dec_rows, first_col="基準")
+                    + f'<ul class="vr">{reading}</ul>')
 
     src_items = "".join(f"<li><code>{e(s)}</code></li>" for s in sources)
     return f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
@@ -766,6 +845,7 @@ def main(argv: list[str] | None = None) -> int:
     stem = out / f"{a.stock}_financial_report_{today}"
     stem.with_suffix(".html").write_text(page, encoding="utf-8")
     metrics = {"stock": a.stock, "shares": r["shares"], "flows": r["flows"],
+               "valuation": valuation(r, a.price) if a.price else None,
                "quarters": dict(r["quarters"]), "balances": dict(r["balances"]), "observations": obs}
     stem.with_suffix(".json").write_text(json.dumps(metrics, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"HTML：{stem.with_suffix('.html')}\nJSON：{stem.with_suffix('.json')}")
