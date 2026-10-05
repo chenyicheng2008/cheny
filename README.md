@@ -90,6 +90,18 @@ PYTHONPATH=src python -m twfactor run --top 3 --stocks 2330,2454,2891 --director
 `--stocks`／`--stocks-file` 會把排名限定在指定清單內（執行時會印出警告）。
 不指定時就是全市場排名。
 
+### 單一公司財務剖析
+
+評分只用到十項因子需要的科目。研究個股時，`profile` 會從同一批 XBRL 整批檔取出毛利、研發、
+推銷／管理費用、業外損益、有效稅率、合約負債、存貨、應收帳款等，輸出年度與逐季表（Markdown）：
+
+```bash
+PYTHONPATH=src python -m twfactor profile --stock 2360 --from-year 2024 --download-xbrl --out output/2360_profile.md
+```
+
+`--download-xbrl` 會下載 `--from-year` 起每一季已過申報期限的季檔。單季數＝本季累計−上季累計，
+缺上季累計時標 N/A，不把累計數當單季。
+
 ### 常用選項
 
 | 選項 | 用途 |

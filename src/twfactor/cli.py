@@ -4,6 +4,7 @@
   python -m twfactor run --top 50 --director-openapi --download-xbrl   # 正式：全市場市值前 50
   python -m twfactor run --top 50 --stocks-file config/universe.txt     # 限定候選母體
   python -m twfactor run --top 50 --source fixture                      # 離線：合成資料驗證管線
+  python -m twfactor profile --stock 2360 --from-year 2024 --download-xbrl   # 單一公司逐季財務剖析
 
 資料來源皆免金鑰：TWSE／TPEx OpenAPI（母體、市值、產業別）、MOPS XBRL 整批檔（財報）、
 證交所／櫃買中心除權息結果表（現金股利）。XBRL 整批檔單檔約 100 MB 以上，預設不自動下載；
@@ -126,6 +127,49 @@ def cmd_run(args) -> int:
     return 0
 
 
+def _profile_archives(args) -> list[tuple[int, int]]:
+    """from-year 起到今天為止、已過申報期限的每一季（年報期限 3/31，期中依 xbrl_fields.yaml）。"""
+    deadlines = {q: tuple(md) for q, md in load_field_map(args.fields)["interim_deadlines"].items()}
+    today = date.today()
+    need = []
+    for y in range(args.from_year, today.year + 1):
+        for q in (1, 2, 3, 4):
+            m, d = (3, 31) if q == 4 else deadlines[int(q)]
+            due = date(y + 1, m, d) if q == 4 else date(y, m, d)
+            if today > due:
+                need.append((y, q))
+    return need
+
+
+def cmd_profile(args) -> int:
+    from .profile import find_archives, merge_facts, render_markdown
+    from .sources.xbrl import XbrlError, archive_name, download_archive
+
+    cache = Path(args.cache_dir)
+    try:
+        if args.download_xbrl:
+            for y, q in _profile_archives(args):
+                if not (cache / archive_name(y, q)).exists():
+                    download_archive(y, q, cache, log=lambda m: print(m, file=sys.stderr))
+        archives = find_archives(cache, from_year=args.from_year)
+        if not archives:
+            print(f"✖ {cache}/ 內沒有 {args.from_year} 年以後的 tifrs-YYYYQn.zip，加 --download-xbrl 下載",
+                  file=sys.stderr)
+            return 2
+        facts, used = merge_facts(archives, args.stock)
+    except XbrlError as exc:
+        print(f"\n✖ {exc}", file=sys.stderr)
+        return 2
+    text = render_markdown(args.stock, facts, used, last_quarters=args.quarters)
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(text, encoding="utf-8")
+        print(f"輸出：{args.out}", file=sys.stderr)
+    else:
+        print(text)
+    return 0
+
+
 def _w(text: str) -> int:
     """東亞全形字寬度為 2，用於終端機表格對齊。"""
     import unicodedata
@@ -218,6 +262,17 @@ def main(argv: list[str] | None = None) -> int:
                    help="直接取 TWSE／TPEx 公開 open data 的董監持股（免金鑰）")
     r.add_argument("--outdir", default="output")
     r.set_defaults(func=cmd_run)
+
+    p = sub.add_parser("profile", help="單一公司 XBRL 逐季財務剖析（毛利、研發、業外、合約負債等）")
+    p.add_argument("--stock", required=True, help="公司代號，例如 2360")
+    p.add_argument("--from-year", type=int, default=date.today().year - 2,
+                   help="起始年度（預設前兩年），只讀取／下載此年度以後的季檔")
+    p.add_argument("--quarters", type=int, default=8, help="單季表顯示最近幾季（預設 8）")
+    p.add_argument("--cache-dir", default=".xbrlcache", help="XBRL 整批檔快取目錄（預設 .xbrlcache）")
+    p.add_argument("--download-xbrl", action="store_true",
+                   help="缺少的季檔自動從公開資訊觀測站下載（單檔約 100 MB 以上）")
+    p.add_argument("--out", default=None, help="輸出 Markdown 檔；省略則印到標準輸出")
+    p.set_defaults(func=cmd_profile)
 
     args = ap.parse_args(argv)
     return args.func(args)
