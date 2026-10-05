@@ -149,7 +149,7 @@ def _profile_archives(args) -> list[tuple[int, int]]:
 
 
 def cmd_profile(args) -> int:
-    from .profile import find_archives, merge_facts, render_markdown
+    from .profile import DEFAULT_FACTS_FILE, find_archives, load_facts_csv, merge_facts, render_markdown
     from .sources.xbrl import XbrlError, archive_name, download_archive
 
     cache = Path(args.cache_dir)
@@ -158,16 +158,22 @@ def cmd_profile(args) -> int:
             for y, q in _profile_archives(args):
                 if not (cache / archive_name(y, q)).exists():
                     download_archive(y, q, cache, log=lambda m: print(m, file=sys.stderr))
-        archives = find_archives(cache, from_year=args.from_year)
-        if not archives:
-            print(f"✖ {cache}/ 內沒有 {args.from_year} 年以後的 tifrs-YYYYQn.zip，加 --download-xbrl 下載",
-                  file=sys.stderr)
+        archives = [] if args.facts else find_archives(cache, from_year=args.from_year)
+        facts_file = Path(args.facts) if args.facts else DEFAULT_FACTS_FILE
+        if archives:
+            facts, used = merge_facts(archives, args.stock)
+        elif facts_file.exists():
+            print(f"      讀取精簡事實檔 {facts_file}（只含評分元素，毛利／研發等標 N/A）", file=sys.stderr)
+            facts, used = load_facts_csv(facts_file, args.stock, from_year=args.from_year)
+        else:
+            print(f"✖ {cache}/ 內沒有 {args.from_year} 年以後的 tifrs-YYYYQn.zip，也沒有 {facts_file}；"
+                  "加 --download-xbrl 下載", file=sys.stderr)
             return 2
-        facts, used = merge_facts(archives, args.stock)
     except XbrlError as exc:
         print(f"\n✖ {exc}", file=sys.stderr)
         return 2
-    text = render_markdown(args.stock, facts, used, last_quarters=args.quarters)
+    source = "MOPS XBRL 整批檔（t203sb02）" if archives else f"XBRL 精簡事實檔 {facts_file}"
+    text = render_markdown(args.stock, facts, used, last_quarters=args.quarters, source=source)
     if args.out:
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)
         Path(args.out).write_text(text, encoding="utf-8")
@@ -301,6 +307,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--download-xbrl", action="store_true",
                    help="缺少的季檔自動從公開資訊觀測站下載（單檔約 100 MB 以上）")
     p.add_argument("--out", default=None, help="輸出 Markdown 檔；省略則印到標準輸出")
+    p.add_argument("--facts", default=None,
+                   help="改讀精簡事實檔（csv.gz）。未指定且快取無季檔時，自動使用 data/xbrl_facts.csv.gz")
     p.set_defaults(func=cmd_profile)
 
     sl = sub.add_parser("xbrl-slim", help="從整批檔只抽出指定公司，另存精簡季檔（可提交到 repo 供雲端使用）")

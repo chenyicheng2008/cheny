@@ -105,7 +105,8 @@ def test_cli_writes_markdown(cache, tmp_path):
 
 
 def test_cli_without_archives_fails(tmp_path):
-    assert main(["profile", "--stock", "2360", "--cache-dir", str(tmp_path)]) == 2
+    assert main(["profile", "--stock", "2360", "--cache-dir", str(tmp_path),
+                 "--facts", str(tmp_path / "missing.csv.gz")]) == 2
 
 
 def test_slim_keeps_only_requested_companies(cache, tmp_path):
@@ -125,3 +126,52 @@ def test_cli_slim(cache, tmp_path):
     assert main(["xbrl-slim", "--stocks", "2360", "--cache-dir", str(cache), "--out", str(out)]) == 0
     assert main(["xbrl-slim", "--stocks", "0000", "--cache-dir", str(cache), "--out", str(out)]) == 2
     assert main(["xbrl-slim", "--cache-dir", str(cache)]) == 2
+
+
+def _facts_csv(path, rows):
+    import gzip
+    with gzip.open(path, "wt", encoding="utf-8", newline="") as fh:
+        fh.write("archive,stock_id,taxonomy,tag,context,value\n")
+        for r in rows:
+            fh.write(",".join(map(str, r)) + "\n")
+    return path
+
+
+def test_load_facts_csv_newer_archive_wins(tmp_path):
+    from twfactor.profile import load_facts_csv
+    f = _facts_csv(tmp_path / "f.csv.gz", [
+        ("2026Q2", "2360", "ci", REV, "From20260101To20260630", 236),
+        ("2025Q4", "2360", "ci", REV, "From20250101To20251231", 280),
+        ("2026Q2", "2360", "ci", REV, "From20250101To20251231", 283),
+        ("2026Q2", "1111", "ci", REV, "From20260101To20260630", 1),
+    ])
+    facts, used = load_facts_csv(f, "2360")
+    assert used == ["2025Q4", "2026Q2"]
+    assert facts[REV] == {"From20260101To20260630": 236, "From20250101To20251231": 283}
+    assert load_facts_csv(f, "2360", from_year=2026)[1] == ["2026Q2"]
+
+
+def test_cli_falls_back_to_facts_file(tmp_path):
+    f = _facts_csv(tmp_path / "f.csv.gz", [
+        ("2025Q4", "2360", "ci", REV, "From20250101To20251231", 28_311_000_000),
+        ("2025Q4", "2360", "ci", OP, "From20250101To20251231", 9_197_000_000),
+    ])
+    out = tmp_path / "p.md"
+    assert main(["profile", "--stock", "2360", "--from-year", "2021", "--cache-dir", str(tmp_path / "none"),
+                 "--facts", str(f), "--out", str(out)]) == 0
+    text = out.read_text(encoding="utf-8")
+    assert "283.11" in text and "32.5%" in text
+
+
+def test_direct_single_quarter_context_is_used():
+    facts = {REV: {"From20260101To20260630": 236, "From20260401To20260630": 135}}
+    (q2,) = build_quarters(facts)
+    assert q2.label == "2026Q2" and q2.values["revenue"] == 135
+
+
+def test_interim_rows_and_all_na_rows_hidden():
+    from twfactor.profile import interim_rows
+    facts = {REV: {"From20250101To20250630": 133, "From20260101To20260630": 254}}
+    assert [label for label, _ in interim_rows(facts)] == ["2025H1", "2026H1"]
+    md = render_markdown("2360", facts, ["2026Q2"])
+    assert "| 營業毛利 |" not in md and "未申報或資料來源未收錄" in md

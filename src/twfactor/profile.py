@@ -96,6 +96,35 @@ def slim_archives(cache_dir: str | Path, stock_ids: list[str], out_dir: str | Pa
     return written
 
 
+DEFAULT_FACTS_FILE = Path("data/xbrl_facts.csv.gz")
+
+
+def load_facts_csv(path: str | Path, stock_id: str,
+                   from_year: int | None = None) -> tuple[Facts, list[str]]:
+    """讀 build-snapshot 產生的精簡事實檔（archive,stock_id,taxonomy,tag,context,value）。
+
+    只含評分用的元素，毛利、研發、合約負債等不在其中，剖析表會標 N/A。
+    合併規則與整批檔相同：依季檔舊→新覆蓋。
+    """
+    import csv
+    import gzip
+
+    by_archive: dict[str, list[tuple[str, str, float]]] = {}
+    with gzip.open(path, "rt", encoding="utf-8", newline="") as fh:
+        for row in csv.DictReader(fh):
+            if row["stock_id"] != stock_id:
+                continue
+            if from_year is not None and int(row["archive"][:4]) < from_year:
+                continue
+            by_archive.setdefault(row["archive"], []).append(
+                (row["tag"], row["context"], float(row["value"])))
+    merged: Facts = {}
+    for label in sorted(by_archive):
+        for tag, ctx, value in by_archive[label]:
+            merged.setdefault(tag, {})[ctx] = value
+    return merged, sorted(by_archive)
+
+
 def merge_facts(archives: list[XbrlArchive], stock_id: str) -> tuple[Facts, list[str]]:
     """依季檔舊→新覆蓋，同一期間以較新申報的數字為準。"""
     merged: Facts = {}
@@ -120,6 +149,11 @@ def _lookup(facts: Facts, tags: list[str], ctx: str) -> float | None:
 
 def _ytd_ctx(year: int, quarter: int) -> str:
     return f"From{year}0101To{year}{QUARTER_END[quarter]}"
+
+
+def _quarter_ctx(year: int, quarter: int) -> str:
+    start = {1: "0101", 2: "0401", 3: "0701", 4: "1001"}[quarter]
+    return f"From{year}{start}To{year}{QUARTER_END[quarter]}"
 
 
 def _inst_ctx(year: int, quarter: int) -> str:
@@ -147,12 +181,15 @@ def build_quarters(facts: Facts) -> list[QuarterRow]:
                 continue
             cur = _lookup(facts, tags, _ytd_ctx(year, q))
             row.ytd[key] = cur
+            direct = _lookup(facts, tags, _quarter_ctx(year, q))   # 期中報告自帶的單季數
             if q == 1:
                 row.values[key] = cur
+            elif direct is not None:
+                row.values[key] = direct
             else:
                 prev = _lookup(facts, tags, _ytd_ctx(year, q - 1))
                 row.values[key] = None if cur is None or prev is None else cur - prev
-        if row.values.get("revenue") is not None or row.values.get("total_equity") is not None:
+        if row.values.get("revenue") is not None:
             rows.append(row)
     return rows
 
@@ -197,6 +234,24 @@ def annual_rows(facts: Facts) -> list[tuple[int, dict[str, float | None]]]:
     return out
 
 
+def interim_rows(facts: Facts) -> list[tuple[str, dict[str, float | None]]]:
+    """期中累計（Q1／H1／前三季），用來與去年同期比較。資產負債取同一期末。"""
+    out = []
+    periods = sorted({(int(m.group(1)), m.group(2)) for by_ctx in facts.values() for ctx in by_ctx
+                      if (m := re.fullmatch(r"From(\d{4})0101To\1(0331|0630|0930)", ctx))})
+    names = {"0331": "Q1", "0630": "H1", "0930": "前三季"}
+    quarter_of = {"0331": 1, "0630": 2, "0930": 3}
+    for year, mmdd in periods:
+        q = quarter_of[mmdd]
+        v = {}
+        for key, (_, tags, kind) in PROFILE_FIELDS.items():
+            ctx = _inst_ctx(year, q) if kind == "inst" else _ytd_ctx(year, q)
+            v[key] = _lookup(facts, tags, ctx)
+        if v.get("revenue") is not None:
+            out.append((f"{year}{names[mmdd]}", v))
+    return out
+
+
 # -- 輸出 ---------------------------------------------------------------------
 
 DERIVED_LABELS = {
@@ -221,19 +276,27 @@ def _fmt(key: str, v: float | None) -> str:
 
 def _table(headers: list[str], series: list[dict[str, float | None]], keys: list[str],
            labels: dict[str, str]) -> list[str]:
+    """整列皆 N/A 的項目不列出，改在表下註明。"""
     lines = ["| 項目 | " + " | ".join(headers) + " |",
              "|---|" + "---:|" * len(headers)]
+    absent = []
     for k in keys:
+        if all(s.get(k) is None for s in series):
+            absent.append(labels[k])
+            continue
         lines.append(f"| {labels[k]} | " + " | ".join(_fmt(k, s.get(k)) for s in series) + " |")
+    if absent:
+        lines += ["", f"未申報或資料來源未收錄：{'、'.join(absent)}。"]
     return lines
 
 
-def render_markdown(stock_id: str, facts: Facts, used: list[str], last_quarters: int = 8) -> str:
+def render_markdown(stock_id: str, facts: Facts, used: list[str], last_quarters: int = 8,
+                    source: str = "MOPS XBRL 整批檔（t203sb02）") -> str:
     labels = {k: v[0] for k, v in PROFILE_FIELDS.items()} | DERIVED_LABELS
     dur_keys = [k for k, v in PROFILE_FIELDS.items() if v[2] == "dur"]
     inst_keys = [k for k, v in PROFILE_FIELDS.items() if v[2] == "inst"]
     out = [f"# {stock_id} XBRL 財務剖析", "",
-           f"來源：MOPS XBRL 整批檔（t203sb02），使用季檔：{'、'.join(used) or '無'}。",
+           f"來源：{source}，使用季檔：{'、'.join(used) or '無'}。",
            "金額單位：億元；EPS 單位：元。N/A 表示該元素未申報或缺上季累計數，不以推測值補齊。", ""]
 
     years = annual_rows(facts)
@@ -243,12 +306,19 @@ def render_markdown(stock_id: str, facts: Facts, used: list[str], last_quarters:
         series = [v | derived(v) for _, v in years]
         out += _table(heads, series, dur_keys + list(DERIVED_LABELS) + inst_keys, labels) + [""]
 
+    interim = interim_rows(facts)
+    if interim:
+        out += ["## 期中累計", "", "年初至期末累計，與去年同期比較用。", ""]
+        heads = [label for label, _ in interim]
+        series = [v | derived(v) for _, v in interim]
+        out += _table(heads, series, dur_keys + list(DERIVED_LABELS) + inst_keys, labels) + [""]
+
     quarters = build_quarters(facts)[-last_quarters:]
     if quarters:
         out += ["## 單季", "", "損益與現金流為單季（本季累計 − 上季累計）；資產負債為季末。", ""]
         heads = [r.label for r in quarters]
         series = [r.values | derived(r.values) for r in quarters]
         out += _table(heads, series, dur_keys + list(DERIVED_LABELS) + inst_keys, labels) + [""]
-    if not years and not quarters:
+    if not years and not quarters and not interim:
         out += [f"⚠ 快取的季檔中找不到 {stock_id} 的申報。", ""]
     return "\n".join(out)

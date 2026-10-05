@@ -99,6 +99,10 @@ PYTHONPATH=src python -m twfactor run --top 3 --stocks 2330,2454,2891 --director
 PYTHONPATH=src python -m twfactor profile --stock 2360 --from-year 2024 --download-xbrl --out output/2360_profile.md
 ```
 
+快取目錄沒有季檔時，`profile` 會改讀 `data/xbrl_facts.csv.gz`（`build-snapshot` 產生的精簡事實檔），
+也可以用 `--facts <檔案>` 指定。精簡事實檔只收錄評分用的元素，毛利、研發、存貨、合約負債等會列在
+「未申報或資料來源未收錄」。期中報告自帶的單季數（例如 `From20260401To20260630`）會直接使用。
+
 `--download-xbrl` 會下載 `--from-year` 起每一季已過申報期限的季檔。單季數＝本季累計−上季累計，
 缺上季累計時標 N/A，不把累計數當單季。
 
