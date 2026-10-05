@@ -14,10 +14,11 @@
 from __future__ import annotations
 
 import re
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .sources.xbrl import Facts, XbrlArchive
+from .sources.xbrl import FILE_RE, Facts, XbrlArchive
 
 QUARTER_END = {1: "0331", 2: "0630", 3: "0930", 4: "1231"}
 
@@ -70,6 +71,29 @@ def find_archives(cache_dir: str | Path, from_year: int | None = None) -> list[X
         if m and (from_year is None or int(m.group(1)) >= from_year):
             found.append((int(m.group(1)), int(m.group(2)), p))
     return [XbrlArchive(p) for _, _, p in sorted(found)]
+
+
+def slim_archives(cache_dir: str | Path, stock_ids: list[str], out_dir: str | Path,
+                  from_year: int | None = None) -> list[tuple[Path, int]]:
+    """從整批檔只抽出指定公司的申報，另存為同名的小 zip（檔名與內部路徑不變，可直接當 --cache-dir 用）。
+
+    合併與個體報表都保留，讓 XbrlArchive 照原規則挑選。回傳（輸出檔, 收錄份數）。
+    """
+    wanted = set(stock_ids)
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    written = []
+    for archive in find_archives(cache_dir, from_year):
+        with zipfile.ZipFile(archive.path) as src:
+            names = [n for n in src.namelist() if (m := FILE_RE.search(n)) and m["sid"] in wanted]
+            if not names:
+                continue
+            dest = out_dir / archive.path.name
+            with zipfile.ZipFile(dest, "w", zipfile.ZIP_DEFLATED) as dst:
+                for n in names:
+                    dst.writestr(n, src.read(n))
+        written.append((dest, len(names)))
+    return written
 
 
 def merge_facts(archives: list[XbrlArchive], stock_id: str) -> tuple[Facts, list[str]]:

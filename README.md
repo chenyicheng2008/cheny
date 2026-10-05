@@ -102,6 +102,44 @@ PYTHONPATH=src python -m twfactor profile --stock 2360 --from-year 2024 --downlo
 `--download-xbrl` 會下載 `--from-year` 起每一季已過申報期限的季檔。單季數＝本季累計−上季累計，
 缺上季累計時標 N/A，不把累計數當單季。
 
+### 使用已下載的 XBRL 整批檔
+
+快取目錄預設為環境變數 `TWFACTOR_CACHE_DIR`，未設定時為執行目錄下的 `.xbrlcache`。
+整批檔放在固定位置時，設定一次就不必每次加 `--cache-dir`：
+
+```powershell
+# Windows：永久設定（設定後要重開 PowerShell 才生效）
+setx TWFACTOR_CACHE_DIR "C:\Users\cheny\claude_code\公司評分\.xbrlcache"
+
+# 之後在專案目錄直接調閱
+$env:PYTHONPATH="src"; $env:PYTHONUTF8=1
+python -m twfactor profile --stock 2360 --from-year 2024 --out output\2360_profile.md
+```
+
+`run` 與 `profile` 都讀這個目錄。
+
+### 讓雲端 session 也能調閱：精簡季檔
+
+雲端環境讀不到本機磁碟，公開資訊觀測站也擋雲端 IP。所以要在本機把需要的公司抽出來
+（每季每家約數百 KB），提交到 repo 的 `xbrl_slim/`：
+
+```powershell
+python -m twfactor xbrl-slim --stocks 2360,3131,2330 --from-year 2021
+git add xbrl_slim
+git commit -m "data: 新增精簡 XBRL 季檔"
+git push
+```
+
+雲端或任何電腦之後都可以用 `--cache-dir xbrl_slim` 調閱：
+
+```bash
+PYTHONPATH=src python -m twfactor profile --stock 2360 --cache-dir xbrl_slim --from-year 2021
+```
+
+精簡檔的檔名、內部路徑都跟整批檔相同，解析結果完全一致。合併報表與個體報表都會保留，
+讓程式照原規則挑選。要追加公司時重跑 `xbrl-slim`，同季檔會被覆寫，所以 `--stocks` 要列出全部需要的公司
+（也可以用 `--stocks-file` 維護清單）。
+
 ### 常用選項
 
 | 選項 | 用途 |

@@ -5,7 +5,8 @@ import zipfile
 import pytest
 
 from twfactor.cli import main
-from twfactor.profile import annual_rows, build_quarters, derived, find_archives, merge_facts, render_markdown
+from twfactor.profile import (annual_rows, build_quarters, derived, find_archives, merge_facts,
+                              render_markdown, slim_archives)
 
 REV = "ifrs-full:Revenue"
 GP = "ifrs-full:GrossProfit"
@@ -105,3 +106,22 @@ def test_cli_writes_markdown(cache, tmp_path):
 
 def test_cli_without_archives_fails(tmp_path):
     assert main(["profile", "--stock", "2360", "--cache-dir", str(tmp_path)]) == 2
+
+
+def test_slim_keeps_only_requested_companies(cache, tmp_path):
+    _archive(cache, "2025Q4", "1111", [(REV, "From20250101To20251231", 5)])
+    out = tmp_path / "slim"
+    written = slim_archives(cache, ["2360"], out)
+    assert [p.name for p, _ in written] == ["tifrs-2026Q1.zip", "tifrs-2026Q2.zip"]
+    with zipfile.ZipFile(out / "tifrs-2026Q2.zip") as z:
+        assert z.namelist() == ["tifrs-fr1-m1-ci-cr-2360-2026Q2.html"]
+    full, _ = merge_facts(find_archives(cache), "2360")
+    slim, _ = merge_facts(find_archives(out), "2360")
+    assert slim == full                       # 精簡檔解析結果與整批檔一致
+
+
+def test_cli_slim(cache, tmp_path):
+    out = tmp_path / "slim"
+    assert main(["xbrl-slim", "--stocks", "2360", "--cache-dir", str(cache), "--out", str(out)]) == 0
+    assert main(["xbrl-slim", "--stocks", "0000", "--cache-dir", str(cache), "--out", str(out)]) == 2
+    assert main(["xbrl-slim", "--cache-dir", str(cache)]) == 2

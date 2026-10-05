@@ -5,6 +5,9 @@
   python -m twfactor run --top 50 --stocks-file config/universe.txt     # 限定候選母體
   python -m twfactor run --top 50 --source fixture                      # 離線：合成資料驗證管線
   python -m twfactor profile --stock 2360 --from-year 2024 --download-xbrl   # 單一公司逐季財務剖析
+  python -m twfactor xbrl-slim --stocks 2360,3131 --out xbrl_slim             # 抽出指定公司的精簡季檔
+
+快取目錄預設為環境變數 TWFACTOR_CACHE_DIR，未設定時為 .xbrlcache。
 
 資料來源皆免金鑰：TWSE／TPEx OpenAPI（母體、市值、產業別）、MOPS XBRL 整批檔（財報）、
 證交所／櫃買中心除權息結果表（現金股利）。XBRL 整批檔單檔約 100 MB 以上，預設不自動下載；
@@ -14,6 +17,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -22,6 +26,9 @@ from .export import cards_to_dataframe, write_excel, write_snapshot
 from .params import load_field_map, load_params
 from .scoring import ScoringEngine
 from .scoring.factors import FACTOR_LABELS
+
+
+DEFAULT_CACHE_DIR = os.environ.get("TWFACTOR_CACHE_DIR") or ".xbrlcache"
 
 
 def _build_source(args, field_map, years):
@@ -170,6 +177,27 @@ def cmd_profile(args) -> int:
     return 0
 
 
+def cmd_slim(args) -> int:
+    from .profile import slim_archives
+    from .sources.xbrl import XbrlError
+
+    stocks = _candidates(args)
+    if not stocks:
+        print("✖ 請用 --stocks 或 --stocks-file 指定公司", file=sys.stderr)
+        return 2
+    try:
+        written = slim_archives(args.cache_dir, stocks, args.out, from_year=args.from_year)
+    except XbrlError as exc:
+        print(f"\n✖ {exc}", file=sys.stderr)
+        return 2
+    if not written:
+        print(f"✖ {args.cache_dir} 內的季檔找不到 {'、'.join(stocks)} 的申報", file=sys.stderr)
+        return 2
+    for path, n in written:
+        print(f"  {path}  {n} 份，{path.stat().st_size / 1024:,.0f} KB", file=sys.stderr)
+    return 0
+
+
 def _w(text: str) -> int:
     """東亞全形字寬度為 2，用於終端機表格對齊。"""
     import unicodedata
@@ -252,8 +280,8 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--as-of", default=None, help="資料基準日 YYYY-MM-DD，用於推定最新完整年度與 TTM 季別")
     r.add_argument("--stocks", default=None, help="限定候選母體代碼，逗號分隔（預設全市場）")
     r.add_argument("--stocks-file", default=None, help="限定候選母體檔案，每行一個代碼")
-    r.add_argument("--cache-dir", default=".xbrlcache",
-                   help="XBRL 整批檔與公開資料快取目錄（預設 .xbrlcache）")
+    r.add_argument("--cache-dir", default=DEFAULT_CACHE_DIR,
+                   help="XBRL 整批檔與公開資料快取目錄（預設 $TWFACTOR_CACHE_DIR 或 .xbrlcache）")
     r.add_argument("--download-xbrl", action="store_true",
                    help="缺少的 XBRL 整批檔自動從公開資訊觀測站下載（單檔約 100 MB 以上）")
     r.add_argument("--director-holdings", default=None,
@@ -268,11 +296,21 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--from-year", type=int, default=date.today().year - 2,
                    help="起始年度（預設前兩年），只讀取／下載此年度以後的季檔")
     p.add_argument("--quarters", type=int, default=8, help="單季表顯示最近幾季（預設 8）")
-    p.add_argument("--cache-dir", default=".xbrlcache", help="XBRL 整批檔快取目錄（預設 .xbrlcache）")
+    p.add_argument("--cache-dir", default=DEFAULT_CACHE_DIR,
+                   help="XBRL 整批檔快取目錄（預設 $TWFACTOR_CACHE_DIR 或 .xbrlcache）")
     p.add_argument("--download-xbrl", action="store_true",
                    help="缺少的季檔自動從公開資訊觀測站下載（單檔約 100 MB 以上）")
     p.add_argument("--out", default=None, help="輸出 Markdown 檔；省略則印到標準輸出")
     p.set_defaults(func=cmd_profile)
+
+    sl = sub.add_parser("xbrl-slim", help="從整批檔只抽出指定公司，另存精簡季檔（可提交到 repo 供雲端使用）")
+    sl.add_argument("--stocks", default=None, help="公司代號，逗號分隔")
+    sl.add_argument("--stocks-file", default=None, help="公司代號檔案，每行一個代碼")
+    sl.add_argument("--from-year", type=int, default=None, help="只處理此年度以後的季檔（預設全部）")
+    sl.add_argument("--cache-dir", default=DEFAULT_CACHE_DIR,
+                    help="來源整批檔目錄（預設 $TWFACTOR_CACHE_DIR 或 .xbrlcache）")
+    sl.add_argument("--out", default="xbrl_slim", help="輸出目錄（預設 xbrl_slim）")
+    sl.set_defaults(func=cmd_slim)
 
     args = ap.parse_args(argv)
     return args.func(args)
